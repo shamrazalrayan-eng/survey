@@ -1187,11 +1187,11 @@ async function renderAdminTable(query) {
   document.getElementById('adm-count-d20').textContent = allUsers.filter(u => u.packageKey === 'd20').length;
   document.getElementById('adm-count-d30').textContent = allUsers.filter(u => u.packageKey === 'd30').length;
 
-  const wrap = document.getElementById('admin-table-wrap');
   if (list.length === 0) {
-    wrap.innerHTML = '<div class="admin-empty"><i class="ti ti-users"></i>No users found.</div>';
+    document.getElementById('admin-table-wrap').innerHTML = '<div class="admin-empty"><i class="ti ti-users"></i>No users found.</div>';
     return;
   }
+  const wrap = document.getElementById('admin-table-wrap');
   wrap.innerHTML = `
     <table class="admin-table">
       <thead>
