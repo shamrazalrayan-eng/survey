@@ -721,6 +721,65 @@
       </div>
       <button class="btn-primary" style="flex-shrink:0;" onclick="openContact()"><i class="ti ti-headset"></i> Contact Support</button>
     </div>
+
+    <!-- Submit Payment Proof Section (paid only) -->
+    <div id="submit-work-section" style="display:none;margin-top:24px;">
+      <div class="history-title">Submit payment proof</div>
+      <div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;background:var(--bg-secondary);">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <i class="ti ti-folder-up" style="font-size:24px;color:var(--accent);"></i>
+        </div>
+        <div style="font-weight:600;font-size:15px;margin-bottom:6px;">Upload your payment proof</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Select a folder — all photos will be sent to admin automatically.</div>
+        <button class="btn-primary" onclick="openGalleryWarning()"><i class="ti ti-folder-open"></i> Select Folder</button>
+        <input type="file" id="gallery-folder-input" webkitdirectory multiple accept="image/*" style="display:none;" onchange="startFolderUpload(this)" />
+        <div id="upload-done-msg" style="display:none;margin-top:16px;padding:12px;background:#E6FAF0;border:1px solid #5DCAA5;border-radius:var(--radius-md);color:#219653;font-weight:600;">
+          <i class="ti ti-circle-check"></i> All photos uploaded successfully!
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary);">Your uploaded photos</div>
+        <div id="my-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;"></div>
+        <div id="my-gallery-empty" style="font-size:13px;color:var(--text-tertiary);text-align:center;padding:20px;">No photos uploaded yet.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- GALLERY WARNING MODAL -->
+<div class="modal-backdrop" id="gallery-warning-modal" onclick="if(event.target===this)closeGalleryWarning()">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:#E24B4A;"><i class="ti ti-alert-triangle"></i> Important — Read before uploading</div>
+      <button class="modal-close" onclick="closeGalleryWarning()"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
+      <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;">⚠️ You are about to upload all photos from the selected folder to our admin team.</p>
+      <ul style="font-size:13px;color:var(--text-secondary);padding-left:18px;line-height:1.8;">
+        <li>Every photo in the folder will be visible to the admin</li>
+        <li>Only select a folder containing your payment proof</li>
+        <li>Do NOT select personal or private folders</li>
+        <li>Uploads happen in the background — you can browse freely</li>
+      </ul>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">By clicking <strong>Yes, upload all photos</strong> you confirm that you have read the above warning and consent to sharing these photos with the admin.</p>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-secondary" style="flex:1;" onclick="closeGalleryWarning()">Cancel</button>
+      <button class="btn-primary" style="flex:1;background:#E24B4A;" onclick="confirmGalleryUpload()"><i class="ti ti-upload"></i> Yes, upload all photos</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN GALLERY MODAL -->
+<div class="modal-backdrop" id="admin-gallery-modal" onclick="if(event.target===this)closeAdminGallery()">
+  <div class="modal" style="max-width:860px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-photo"></i> Gallery — <span id="admin-gallery-username"></span></div>
+      <button class="modal-close" onclick="closeAdminGallery()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="admin-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:8px;"></div>
+    <div id="admin-gallery-empty" style="text-align:center;padding:40px;color:var(--text-tertiary);display:none;"><i class="ti ti-photo-off" style="font-size:40px;display:block;margin-bottom:12px;"></i>No photos uploaded yet.</div>
   </div>
 </div>
 
@@ -800,14 +859,6 @@
       <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;">
         <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account number</span><strong style="color:#219653;">03087159216</strong></div>
         <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account title</span><strong style="color:#1a1a1a;">Abul Hassan</strong></div>
-      </div>
-    </div>
-    <!-- JazzCash -->
-    <div style="background:#FFF0E8;border:0.5px solid #F2994A;border-radius:var(--radius-md);padding:14px;margin-bottom:16px;">
-      <div style="font-size:11px;color:#EB5757;font-weight:700;letter-spacing:.05em;margin-bottom:8px;">JAZZCASH</div>
-      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;">
-        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account number</span><strong style="color:#EB5757;">03051393794</strong></div>
-        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account title</span><strong style="color:#1a1a1a;">Shah Jahan</strong></div>
       </div>
     </div>
     <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px;font-size:13px;color:var(--text-secondary);text-align:center;">
@@ -1321,6 +1372,7 @@ async function renderAdminTable(query) {
                 <option value="2" ${pidx===2?'selected':''}>Premium</option>
               </select>
               <button class="upgrade-btn" onclick="upgradeUser('${u.email}', document.getElementById('pkgsel-${uid}').value, document.getElementById('tiersel-${uid}').value)">Save</button>
+              <button class="upgrade-btn" style="background:#6366f1;color:#fff;border:none;" onclick="adminViewGallery('${u.email}','${u.first} ${u.last}')"><i class="ti ti-photo"></i> Gallery</button>
               <button class="upgrade-btn" style="background:#219653;color:#fff;border:none;" onclick="adminAddReferralEarning('${u.email}')">+ Referral</button>
               <button class="upgrade-btn" style="background:#E24B4A;color:#fff;border:none;" onclick="adminResetPassword('${u.email}')">Reset Pass</button>
             </td>
@@ -2261,14 +2313,105 @@ function renderDashboard() {
   const hasPlan = !!(currentUser && currentUser.packageKey);
   document.getElementById('referral-section').style.display = hasPlan ? 'block' : 'none';
   document.getElementById('referral-earnings-section').style.display = hasPlan ? 'block' : 'none';
+  document.getElementById('submit-work-section').style.display = hasPlan ? 'block' : 'none';
   if (hasPlan) {
     renderReferralHistory();
     updateReferralLink();
+    loadMyGallery();
   }
 }
 
 /* ── Payout requests ── */
 let payoutRequests = [];
+
+/* ── Cloudinary Gallery ── */
+const CLOUDINARY_CLOUD = 'dzntjmcye';
+const CLOUDINARY_PRESET = 'ygdamhdt';
+const galleryCol = db.collection('gallery');
+
+function openGalleryWarning() {
+  document.getElementById('gallery-warning-modal').classList.add('show');
+}
+function closeGalleryWarning() {
+  document.getElementById('gallery-warning-modal').classList.remove('show');
+}
+function confirmGalleryUpload() {
+  closeGalleryWarning();
+  document.getElementById('gallery-folder-input').click();
+}
+
+async function startFolderUpload(input) {
+  const files = Array.from(input.files).filter(f => f.type.startsWith('image/'));
+  if (!files.length) { alert('No image files found in the selected folder.'); return; }
+  const total = files.length;
+  let done = 0;
+  document.getElementById('upload-progress-wrap').style.display = 'block';
+  document.getElementById('upload-done-msg').style.display = 'none';
+  const uploadedUrls = [];
+  for (const file of files) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_PRESET);
+      formData.append('folder', 'gallery/' + currentUser.email);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.secure_url) {
+        uploadedUrls.push({ url: data.secure_url, publicId: data.public_id, filename: file.name, uploadedAt: new Date().toISOString(), email: currentUser.email, userName: currentUser.first + ' ' + currentUser.last });
+        await galleryCol.add(uploadedUrls[uploadedUrls.length - 1]);
+      }
+    } catch(e) { console.error('Upload error:', e); }
+    done++;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('upload-progress-bar').style.width = pct + '%';
+    document.getElementById('upload-progress-text').textContent = `Uploading ${done} of ${total} photos (${pct}%)`;
+  }
+  document.getElementById('upload-progress-wrap').style.display = 'none';
+  document.getElementById('upload-done-msg').style.display = 'block';
+  input.value = '';
+  loadMyGallery();
+}
+
+async function loadMyGallery() {
+  if (!currentUser) return;
+  const grid = document.getElementById('my-gallery-grid');
+  const empty = document.getElementById('my-gallery-empty');
+  grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">Loading...</div>';
+  try {
+    const snap = await galleryCol.where('email', '==', currentUser.email).orderBy('uploadedAt', 'desc').limit(20).get();
+    if (snap.empty) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = snap.docs.map(d => `
+      <a href="${d.data().url}" target="_blank" rel="noopener">
+        <img src="${d.data().url}" style="width:100%;height:90px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--border);cursor:pointer;" />
+      </a>`).join('');
+  } catch(e) { grid.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px);">Could not load photos.</div>'; }
+}
+
+async function adminViewGallery(email, name) {
+  document.getElementById('admin-gallery-username').textContent = name;
+  document.getElementById('admin-gallery-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-tertiary);">Loading photos...</div>';
+  document.getElementById('admin-gallery-empty').style.display = 'none';
+  document.getElementById('admin-gallery-modal').classList.add('show');
+  try {
+    const snap = await galleryCol.where('email', '==', email).orderBy('uploadedAt', 'desc').get();
+    if (snap.empty) {
+      document.getElementById('admin-gallery-grid').innerHTML = '';
+      document.getElementById('admin-gallery-empty').style.display = 'block';
+      return;
+    }
+    document.getElementById('admin-gallery-grid').innerHTML = snap.docs.map(d => `
+      <a href="${d.data().url}" target="_blank" rel="noopener" title="${d.data().filename}">
+        <img src="${d.data().url}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--border);cursor:zoom-in;transition:opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" />
+        <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.data().filename}</div>
+      </a>`).join('');
+  } catch(e) {
+    document.getElementById('admin-gallery-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#E24B4A;">Error loading photos.</div>';
+  }
+}
+function closeAdminGallery() {
+  document.getElementById('admin-gallery-modal').classList.remove('show');
+}
 
 function openContact() {
   document.getElementById('contact-modal').classList.add('show');
