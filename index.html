@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SurveyEarn — Get paid to share your opinions</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-tertiary: #eeecea;
+      --text: #1a1a19;
+      --text-secondary: #6b6b67;
+      --text-tertiary: #9b9b97;
+      --border: rgba(0,0,0,0.12);
+      --border-secondary: rgba(0,0,0,0.22);
+      --accent: #534AB7;
+      --accent-dark: #3C3489;
+      --accent-light: #EEEDFE;
+      --accent-mid: #AFA9EC;
+      --green: #1D9E75;
+      --green-bg: #EAF3DE;
+      --green-text: #3B6D11;
+      --amber-bg: #FAEEDA;
+      --amber-text: #854F0B;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1b;
+        --bg-secondary: #252523;
+        --bg-tertiary: #2e2e2c;
+        --text: #f0eeea;
+        --text-secondary: #a0a09c;
+        --text-tertiary: #6b6b67;
+        --border: rgba(255,255,255,0.12);
+        --border-secondary: rgba(255,255,255,0.22);
+        --accent: #7F77DD;
+        --accent-dark: #AFA9EC;
+        --accent-light: #26215C;
+        --accent-mid: #534AB7;
+        --green: #5DCAA5;
+        --green-bg: #04342C;
+        --green-text: #9FE1CB;
+        --amber-bg: #412402;
+        --amber-text: #FAC775;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-tertiary); color: var(--text); font-size: 16px; line-height: 1.7; min-height: 100vh; }
+
+    /* ADMIN PAGE */
+    .admin-wrap { padding: 28px 24px 48px; max-width: 860px; margin: 0 auto; }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .admin-header h2 { font-size: 22px; font-weight: 700; }
+    .admin-badge { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-md); letter-spacing: 0.04em; }
+    .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .admin-stat { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+    .admin-stat .a-val { font-size: 26px; font-weight: 700; color: var(--accent); }
+    .admin-stat .a-lbl { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .admin-search { width: 100%; padding: 10px 14px 10px 38px; border: 0.5px solid var(--border-secondary); border-radius: var(--radius-md); font-size: 14px; background: var(--bg); color: var(--text); outline: none; margin-bottom: 16px; }
+    .admin-search-wrap { position: relative; }
+    .admin-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); font-size: 16px; pointer-events: none; }
+    .admin-table { width: 100%; border-collapse: collapse; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; font-size: 14px; }
+    .admin-table th { background: var(--bg-secondary); padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 0.5px solid var(--border); }
+    .admin-table td { padding: 13px 16px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: var(--bg-secondary); }
+    .user-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; border: 0.5px solid var(--accent-mid); }
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .status-active { background: var(--green-bg); color: var(--green-text); }
+    .status-new { background: var(--accent-light); color: var(--accent-dark); }
+    .plan-select { padding: 6px 10px; border: 0.5px solid var(--border-secondary); border-radius: var(--radius-md); font-size: 13px; background: var(--bg); color: var(--text); cursor: pointer; }
+    .upgrade-btn { background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 6px 14px; border-radius: var(--radius-md); font-size: 12px; font-weight: 500; transition: background 0.15s; }
+    .upgrade-btn:hover { background: var(--accent-dark); }
+    .plan-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .plan-free { background: var(--bg-secondary); color: var(--text-secondary); border: 0.5px solid var(--border); }
+    .plan-starter { background: #E6F1FB; color: #185FA5; }
+    .plan-pro { background: #EEEDFE; color: #3C3489; }
+    .plan-elite { background: #FAEEDA; color: #854F0B; }
+
+    /* PRICING PAGE */
+    .pricing-wrap { padding: 48px 24px; max-width: 860px; margin: 0 auto; text-align: center; }
+    .pricing-wrap h2 { font-size: 30px; font-weight: 700; margin-bottom: 10px; }
+    .pricing-wrap p { font-size: 16px; color: var(--text-secondary); margin-bottom: 36px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; text-align: left; }
+    .pricing-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 28px 24px; position: relative; }
+    .pricing-card.featured { border: 2px solid var(--accent); }
+    .featured-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 14px; border-radius: 20px; white-space: nowrap; }
+    .pricing-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .pricing-card .price { font-size: 36px; font-weight: 700; margin: 14px 0 4px; }
+    .pricing-card .price span { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+    .pricing-card .survey-limit { font-size: 14px; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+    .pricing-features { list-style: none; margin-bottom: 24px; display: flex; flex-direction: column; gap: 9px; }
+    .pricing-features li { font-size: 14px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+    .pricing-features li i { color: var(--green); font-size: 16px; flex-shrink: 0; }
+    .plan-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+    .day-tab { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:18px 12px; cursor:pointer; color:var(--text-secondary); text-align:center; transition:all 0.15s; }
+    .day-tab:hover { border-color:var(--accent); color:var(--accent); }
+    .day-tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .current-plan-banner { background: var(--green-bg); border: 0.5px solid #5DCAA5; border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 14px; color: var(--green-text); }
+    .surveys-left-bar { height: 6px; background: var(--bg-secondary); border-radius: 3px; margin-top: 6px; }
+    .surveys-left-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.3s; }
+    .admin-empty { text-align: center; padding: 48px 24px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); color: var(--text-secondary); }
+    .admin-empty i { font-size: 36px; display: block; margin-bottom: 12px; color: var(--text-tertiary); }
+    .admin-pin-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; }
+    .admin-pin-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 36px 32px; width: 100%; max-width: 360px; text-align: center; }
+    .admin-pin-card i { font-size: 36px; color: var(--accent); display: block; margin-bottom: 14px; }
+    .admin-pin-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .admin-pin-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+    .pin-input { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+    .pin-input input { width: 48px; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border: 0.5px solid var(--border-secondary); border-radius: var(--radius-md); background: var(--bg); color: var(--text); outline: none; }
+    .pin-input input:focus { border-color: var(--accent); }
+    .pin-error { color: #A32D2D; font-size: 13px; margin-top: -10px; margin-bottom: 12px; min-height: 18px; }
+
+    /* AUTH PAGE */
+    .auth-wrap { min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+    .auth-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 36px 32px; width: 100%; max-width: 400px; }
+    .auth-logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 28px; justify-content: center; }
+    .auth-logo i { font-size: 24px; }
+    .auth-tabs { display: flex; border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 3px; margin-bottom: 24px; }
+    .auth-tab { flex: 1; padding: 8px; border: none; background: none; cursor: pointer; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; }
+    .auth-tab.active { background: var(--accent); color: #fff; }
+    .auth-error { background: #FCEBEB; border: 0.5px solid #F09595; color: #A32D2D; padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 16px; display: none; }
+    .auth-error.show { display: block; }
+    .auth-success { background: var(--green-bg); border: 0.5px solid #5DCAA5; color: var(--green-text); padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 16px; display: none; }
+    .auth-success.show { display: block; }
+    .input-group { position: relative; }
+    .input-group > i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-tertiary); pointer-events: none; }
+    .input-group input { padding-left: 38px !important; padding-right: 40px !important; }
+    .input-group .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-tertiary); font-size: 16px; padding: 4px; z-index: 2; }
+    .auth-divider { text-align: center; font-size: 12px; color: var(--text-tertiary); margin: 16px 0; position: relative; }
+    .auth-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 0.5px; background: var(--border); }
+    .auth-divider span { background: var(--bg); padding: 0 12px; position: relative; }
+    .google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; border: 0.5px solid var(--border-secondary); border-radius: var(--radius-md); background: var(--bg); cursor: pointer; font-size: 14px; color: var(--text); font-weight: 500; transition: background 0.15s; }
+    .google-btn:hover { background: var(--bg-secondary); }
+    .google-icon { width: 18px; height: 18px; }
+    .auth-footer-text { text-align: center; font-size: 13px; color: var(--text-secondary); margin-top: 20px; }
+    .auth-footer-text a { color: var(--accent); cursor: pointer; text-decoration: none; }
+    .strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+    .strength-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background 0.2s; }
+    .strength-label { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
+    .nav-logo { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; }
+    .nav-logo i { font-size: 22px; color: var(--accent); }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-links button { background: none; border: none; cursor: pointer; padding: 7px 14px; border-radius: var(--radius-md); font-size: 14px; color: var(--text-secondary); transition: background 0.15s, color 0.15s; }
+    .nav-links button:hover, .nav-links button.active { background: var(--bg-secondary); color: var(--text); }
+    .nav-cta { background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 8px 18px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; transition: background 0.15s; }
+    .nav-cta:hover { background: var(--accent-dark); }
+    .nav-user { display: flex; align-items: center; gap: 10px; }
+    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; border: 0.5px solid var(--accent-mid); }
+    .nav-logout { background: none; border: 0.5px solid var(--border); cursor: pointer; padding: 6px 14px; border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary); transition: all 0.15s; }
+    .nav-logout:hover { background: var(--bg-secondary); color: var(--text); }
+    @media (max-width: 500px) { .nav-links { display: none; } }
+
+    /* PAGES */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* HOME */
+    .hero { text-align: center; padding: 64px 24px 48px; max-width: 640px; margin: 0 auto; }
+    .hero h1 { font-size: 36px; font-weight: 700; line-height: 1.25; margin-bottom: 16px; }
+    .hero p { font-size: 17px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 32px; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 12px 26px; border-radius: var(--radius-md); font-size: 15px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 0.5px solid var(--border-secondary); cursor: pointer; padding: 12px 26px; border-radius: var(--radius-md); font-size: 15px; transition: background 0.15s; }
+    .btn-secondary:hover { background: var(--bg-secondary); }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 24px 48px; max-width: 580px; margin: 0 auto; }
+    .stat-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 16px; text-align: center; }
+    .stat-card .val { font-size: 26px; font-weight: 700; color: var(--accent); }
+    .stat-card .lbl { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+    .section { padding: 0 24px 56px; max-width: 860px; margin: 0 auto; }
+    .section-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .step-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px 18px; text-align: center; }
+    .step-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .step-icon i { font-size: 22px; color: var(--accent); }
+    .step-num { font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 6px; text-transform: uppercase; }
+    .step-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .step-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .testi { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+    .testi-stars { color: #EF9F27; font-size: 14px; margin-bottom: 8px; }
+    .testi p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-light); }
+    .testi-name { font-size: 13px; font-weight: 500; }
+    .testi-sub { font-size: 12px; color: var(--text-tertiary); }
+
+    /* SURVEYS PAGE */
+    .surveys-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 24px 16px; max-width: 860px; margin: 0 auto; flex-wrap: wrap; gap: 8px; }
+    .surveys-header h2 { font-size: 22px; font-weight: 600; }
+    .filter-row { display: flex; gap: 8px; padding: 0 24px 20px; max-width: 860px; margin: 0 auto; flex-wrap: wrap; }
+    .filter-btn { background: var(--bg); border: 0.5px solid var(--border); padding: 7px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; }
+    .filter-btn.active { background: var(--accent-light); border-color: var(--accent-mid); color: var(--accent-dark); }
+    .survey-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 0 24px 40px; max-width: 860px; margin: 0 auto; }
+    .survey-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; transition: border-color 0.15s, transform 0.1s; }
+    .survey-card:hover { border-color: var(--border-secondary); transform: translateY(-1px); }
+    .survey-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-md); margin-bottom: 12px; }
+    .badge-high { background: var(--green-bg); color: var(--green-text); }
+    .badge-quick { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-new { background: var(--accent-light); color: var(--accent-dark); }
+    .survey-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .survey-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.55; }
+    .survey-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .survey-earn { font-size: 18px; font-weight: 700; color: var(--accent); }
+    .survey-time { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+    .take-btn { width: 100%; background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 10px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; transition: background 0.15s; }
+    .take-btn:hover { background: var(--accent-dark); }
+    .take-btn:disabled { background: var(--bg-secondary); color: var(--text-tertiary); cursor: default; }
+
+    /* MODAL */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-backdrop.show { display: flex; }
+    .modal { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 17px; font-weight: 600; }
+    .modal-close { background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 22px; line-height: 1; padding: 2px; }
+    .modal-close:hover { color: var(--text); }
+    .progress-bar { height: 5px; background: var(--bg-secondary); border-radius: 3px; margin-bottom: 24px; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.35s ease; }
+    .question-text { font-size: 16px; font-weight: 500; margin-bottom: 18px; line-height: 1.6; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .option-btn { background: var(--bg-secondary); border: 0.5px solid var(--border); padding: 13px 16px; border-radius: var(--radius-md); font-size: 14px; cursor: pointer; text-align: left; color: var(--text); transition: all 0.12s; }
+    .option-btn:hover { border-color: var(--accent-mid); background: var(--accent-light); color: var(--accent-dark); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); font-weight: 500; }
+    .modal-footer { display: flex; align-items: center; justify-content: space-between; }
+    .q-counter { font-size: 13px; color: var(--text-secondary); }
+    .next-btn { background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 10px 22px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; transition: background 0.15s; }
+    .next-btn:hover { background: var(--accent-dark); }
+    .next-btn:disabled { opacity: 0.35; cursor: default; }
+    .complete-screen { text-align: center; padding: 12px 0 4px; }
+    .complete-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .complete-icon i { font-size: 30px; color: var(--green-text); }
+    .complete-earn { font-size: 36px; font-weight: 700; color: var(--accent); margin: 8px 0 4px; }
+    .complete-btns { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+
+    /* DASHBOARD */
+    .dashboard { padding: 24px; max-width: 860px; margin: 0 auto; }
+    .dashboard h2 { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
+    .balance-card { background: var(--accent-light); border: 0.5px solid var(--accent-mid); border-radius: var(--radius-lg); padding: 28px 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .balance-label { font-size: 13px; color: var(--accent); font-weight: 500; }
+    .balance-amount { font-size: 42px; font-weight: 700; color: var(--accent-dark); }
+    .withdraw-btn { background: var(--accent); color: #fff; border: none; cursor: pointer; padding: 12px 24px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: background 0.15s; }
+    .withdraw-btn:hover { background: var(--accent-dark); }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .metric { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+    .metric .m-icon { font-size: 20px; color: var(--accent); margin-bottom: 10px; }
+    .metric .m-val { font-size: 26px; font-weight: 700; }
+    .metric .m-lbl { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+    .history-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+    .history-list { display: flex; flex-direction: column; gap: 10px; }
+    .history-item { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+    .history-info h4 { font-size: 14px; font-weight: 500; }
+    .history-info p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .history-earn { font-size: 16px; font-weight: 700; color: var(--green); }
+    .empty-state { text-align: center; padding: 48px 24px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); }
+    .empty-state i { font-size: 40px; color: var(--text-tertiary); display: block; margin-bottom: 14px; }
+    .empty-state p { color: var(--text-secondary); margin-bottom: 16px; }
+
+    /* WITHDRAW MODAL */
+    .field { margin-bottom: 16px; }
+    .field label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 500; }
+    .field input, .field select { width: 100%; padding: 10px 14px; border: 0.5px solid var(--border-secondary); border-radius: var(--radius-md); font-size: 14px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field-row { display: flex; gap: 12px; }
+    .field-row .field { flex: 1; }
+    .success-screen { text-align: center; padding: 8px 0; }
+    .success-screen i { font-size: 40px; color: var(--green-text); display: block; margin-bottom: 12px; }
+    .success-screen h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .success-screen p { font-size: 14px; color: var(--text-secondary); }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 32px 24px; border-top: 0.5px solid var(--border); color: var(--text-tertiary); font-size: 13px; background: var(--bg); margin-top: 40px; }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home')">
+    <i class="ti ti-currency-dollar"></i> SurveyEarn
+  </a>
+  <div class="nav-links" id="nav-links">
+    <button class="active" onclick="showPage('home')">Home</button>
+    <button onclick="showPage('surveys')">Surveys</button>
+    <button onclick="showPage('pricing')">Pricing</button>
+    <button onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="openContact()">Contact</button>
+  </div>
+  <div id="nav-guest">
+    <button class="nav-cta" onclick="openAuth('login')">Sign in</button>
+  </div>
+  <div id="nav-user" class="nav-user" style="display:none;">
+    <div class="nav-avatar" id="nav-avatar" title="My profile" onclick="showPage('profile')" style="cursor:pointer;overflow:hidden;"></div>
+    <button class="nav-logout" onclick="logout()"><i class="ti ti-logout" style="font-size:14px;vertical-align:-2px;"></i> Log out</button>
+  </div>
+</nav>
+
+<!-- AUTH PAGE -->
+<div class="page" id="page-auth">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo"><i class="ti ti-currency-dollar"></i> SurveyEarn</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create account</button>
+      </div>
+
+      <div id="auth-error" class="auth-error"></div>
+      <div id="auth-success" class="auth-success"></div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-group">
+            <i class="ti ti-mail"></i>
+            <input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="input-group">
+            <i class="ti ti-lock"></i>
+            <input type="password" id="login-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()" />
+            <button class="eye-btn" onclick="togglePass('login-password',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px;">
+          <a style="font-size:13px;color:var(--accent);cursor:pointer;" onclick="showForgot()">Forgot password?</a>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">
+          <i class="ti ti-login"></i> Sign in
+        </button>
+        <div class="auth-divider"><span>or</span></div>
+        <button class="google-btn" onclick="doGoogleAuth()">
+          <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <div class="auth-footer-text">Don't have an account? <a onclick="switchAuthTab('signup')">Create one free</a></div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signup-form" style="display:none;">
+        <div class="field-row">
+          <div class="field">
+            <label>First name</label>
+            <div class="input-group">
+              <i class="ti ti-user"></i>
+              <input type="text" id="signup-first" placeholder="Jane" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input type="text" id="signup-last" placeholder="Smith" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-group">
+            <i class="ti ti-mail"></i>
+            <input type="email" id="signup-email" placeholder="you@example.com" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="input-group">
+            <i class="ti ti-lock"></i>
+            <input type="password" id="signup-password" placeholder="Min. 8 characters" oninput="checkStrength(this.value)" />
+            <button class="eye-btn" id="signup-eye" onclick="toggleSignupPass()" tabindex="-1"><i class="ti ti-eye"></i></button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="str1"></div>
+            <div class="strength-seg" id="str2"></div>
+            <div class="strength-seg" id="str3"></div>
+            <div class="strength-seg" id="str4"></div>
+          </div>
+          <div class="strength-label" id="str-label"></div>
+        </div>
+        <div class="field">
+          <label>Confirm password</label>
+          <div class="input-group">
+            <i class="ti ti-lock-check"></i>
+            <input type="password" id="signup-confirm" placeholder="Repeat password" />
+            <button class="eye-btn" onclick="toggleSignupPass()" tabindex="-1"><i class="ti ti-eye"></i></button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Phone number</label>
+            <div class="input-group">
+              <i class="ti ti-phone"></i>
+              <input type="tel" id="signup-phone" placeholder="03XX XXXXXXX" />
+            </div>
+          </div>
+          <div class="field">
+            <label>WhatsApp number <span style="color:#E24B4A;font-size:11px;">*required</span></label>
+            <div class="input-group">
+              <i class="ti ti-brand-whatsapp"></i>
+              <input type="tel" id="signup-whatsapp" placeholder="03XX XXXXXXX" />
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Memorable word <span style="font-size:11px;color:var(--text-secondary);">(used to recover your password)</span></label>
+          <div class="input-group">
+            <i class="ti ti-key"></i>
+            <input type="text" id="signup-memword" placeholder="e.g. sunshine123" autocomplete="off" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;font-size:13px;color:var(--text-secondary);">
+          <input type="checkbox" id="agree-terms" style="margin-top:3px;flex-shrink:0;" />
+          <label for="agree-terms">I agree to the <a href="#" style="color:var(--accent);">Terms of Service</a> and <a href="#" style="color:var(--accent);">Privacy Policy</a></label>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="doSignup()">
+          <i class="ti ti-user-plus"></i> Create account
+        </button>
+        <div class="auth-divider"><span>or</span></div>
+        <button class="google-btn" onclick="doGoogleAuth()">
+          <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84z"/></svg>
+          Sign up with Google
+        </button>
+        <div class="auth-footer-text">Already have an account? <a onclick="switchAuthTab('login')">Sign in</a></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="forgot-form" style="display:none;">
+        <!-- Step 1: verify email + memorable word -->
+        <div id="forgot-step1">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="ti ti-key" style="font-size:24px;color:var(--accent);"></i></div>
+            <div style="font-size:16px;font-weight:600;">Recover your password</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-top:6px;">Enter your email and memorable word to continue.</div>
+          </div>
+          <div class="field">
+            <label>Email address</label>
+            <div class="input-group">
+              <i class="ti ti-mail"></i>
+              <input type="email" id="forgot-email" placeholder="you@example.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Memorable word</label>
+            <div class="input-group">
+              <i class="ti ti-key"></i>
+              <input type="text" id="forgot-memword" placeholder="Your memorable word" autocomplete="off" onkeydown="if(event.key==='Enter')doForgotVerify()" />
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center;" onclick="doForgotVerify()">
+            <i class="ti ti-arrow-right"></i> Verify
+          </button>
+          <div class="auth-footer-text" style="margin-top:16px;"><a onclick="switchAuthTab('login')">← Back to sign in</a></div>
+        </div>
+        <!-- Step 2: set new password -->
+        <div id="forgot-step2" style="display:none;">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="width:52px;height:52px;border-radius:50%;background:#E6FAF0;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="ti ti-lock-check" style="font-size:24px;color:#219653;"></i></div>
+            <div style="font-size:16px;font-weight:600;">Set new password</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-top:6px;">Identity verified. Enter your new password below.</div>
+          </div>
+          <div class="field">
+            <label>New password</label>
+            <div class="input-group">
+              <i class="ti ti-lock"></i>
+              <input type="password" id="forgot-newpass" placeholder="Min. 8 characters" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Confirm new password</label>
+            <div class="input-group">
+              <i class="ti ti-lock-check"></i>
+              <input type="password" id="forgot-confirmpass" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doForgotReset()" />
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center;" onclick="doForgotReset()">
+            <i class="ti ti-check"></i> Reset password
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1>Get paid to share your opinions</h1>
+    <p>Complete surveys, earn real money. Cash out to Easypaisa, Jazzcash, or bank transfer whenever you want.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('surveys')"><i class="ti ti-clipboard-list"></i> Browse surveys</button>
+      <button class="btn-secondary" onclick="showPage('dashboard')">View dashboard</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="val">12,840</div><div class="lbl">Active members</div></div>
+    <div class="stat-card"><div class="val">$2.1M</div><div class="lbl">Total paid out</div></div>
+    <div class="stat-card"><div class="val">$5–$50</div><div class="lbl">Per survey</div></div>
+  </div>
+
+  <div id="home-guest-sections">
+  <div class="section">
+    <div class="section-title">How it works</div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">Step 1</div>
+        <div class="step-icon"><i class="ti ti-user-plus"></i></div>
+        <h3>Sign up free</h3>
+        <p>Create your account in under a minute. No payment needed.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 2</div>
+        <div class="step-icon"><i class="ti ti-clipboard-check"></i></div>
+        <h3>Pick a survey</h3>
+        <p>Browse surveys matched to your profile. See pay before you start.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 3</div>
+        <div class="step-icon"><i class="ti ti-pencil"></i></div>
+        <h3>Share opinions</h3>
+        <p>Answer honestly. Most surveys take 5–15 minutes to complete.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 4</div>
+        <div class="step-icon"><i class="ti ti-cash"></i></div>
+        <h3>Cash out</h3>
+        <p>Withdraw via Easypaisa, Jazzcash or bank transfer instantly.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="home-pricing-section">
+    <div class="section-title">Choose your package</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <button class="day-tab" id="htab-d10" onclick="selectHomeDayTab('d10')">
+        <div style="font-size:22px;font-weight:700;">10</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:3px;">30 surveys · 3/day</div>
+      </button>
+      <button class="day-tab" id="htab-d20" onclick="selectHomeDayTab('d20')">
+        <div style="font-size:22px;font-weight:700;">20</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:3px;">80 surveys · 4/day</div>
+      </button>
+      <button class="day-tab" id="htab-d30" onclick="selectHomeDayTab('d30')">
+        <div style="font-size:22px;font-weight:700;">30</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;opacity:0.8;margin-top:3px;">150 surveys · 5/day</div>
+      </button>
+    </div>
+    <div id="home-pricing-tap-prompt" style="text-align:center;padding:24px 0;color:var(--text-secondary);font-size:14px;">
+      <i class="ti ti-hand-click" style="font-size:32px;display:block;margin-bottom:12px;color:var(--text-tertiary);"></i>
+      Tap a package to see pricing
+    </div>
+    <div id="home-pricing-grid" style="display:none;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;"></div>
+    <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-secondary);">
+      After purchase, send payment via bank transfer and we'll activate within 24 hours.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What members say</div>
+    <div class="testimonials">
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"I've earned over 5000 PKR in my first month. The surveys are easy and the payouts are fast."</p>
+        <div class="testi-author">
+          <div class="avatar">AM</div>
+          <div><div class="testi-name">Ali M.</div><div class="testi-sub">Member since 2024</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"Love how I can do surveys during lunch breaks. It actually adds up fast!"</p>
+        <div class="testi-author">
+          <div class="avatar">SR</div>
+          <div><div class="testi-name">Sara R.</div><div class="testi-sub">Member since 2023</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-stars">★★★★★</div>
+        <p>"JazzCash cashout within 24 hours. No fuss, no hidden minimums. Highly recommended."</p>
+        <div class="testi-author">
+          <div class="avatar">DK</div>
+          <div><div class="testi-name">Danial K.</div><div class="testi-sub">Member since 2024</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div><!-- end home-guest-sections -->
+
+  <!-- ACTIVE PLAN: shown instead of above sections -->
+  <div id="home-member-sections" style="display:none;padding:0 24px 40px;max-width:860px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div>
+        <div style="font-size:22px;font-weight:700;" id="home-welcome-title">Welcome back!</div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;" id="home-welcome-sub"></div>
+      </div>
+      <button class="btn-primary" onclick="showPage('dashboard')"><i class="ti ti-chart-bar"></i> My earnings</button>
+    </div>
+    <div id="home-survey-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;"></div>
+  </div>
+
+</div>
+
+<!-- SURVEYS PAGE -->
+<div class="page" id="page-surveys">
+  <div class="surveys-header">
+    <h2>Available surveys</h2>
+    <span id="survey-count-label" style="font-size:13px;color:var(--text-secondary);"></span>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="all" onclick="filterSurveys('all', this)">All</button>
+    <button class="filter-btn" data-filter="high" onclick="filterSurveys('high', this)">High pay</button>
+    <button class="filter-btn" data-filter="quick" onclick="filterSurveys('quick', this)">Quick (&lt;10 min)</button>
+    <button class="filter-btn" data-filter="new" onclick="filterSurveys('new', this)">New</button>
+  </div>
+  <div class="survey-grid" id="survey-grid"></div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+  <div class="dashboard">
+    <h2>My earnings</h2>
+    <div class="balance-card">
+      <div>
+        <div class="balance-label">Available balance</div>
+        <div class="balance-amount" id="balance-amount">$0.00</div>
+      </div>
+      <button class="withdraw-btn" onclick="openWithdraw()"><i class="ti ti-arrow-up-right"></i> Withdraw funds</button>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="m-icon"><i class="ti ti-clipboard-check"></i></div><div class="m-val" id="metric-surveys">0</div><div class="m-lbl">Surveys done</div></div>
+      <div class="metric"><div class="m-icon"><i class="ti ti-flame"></i></div><div class="m-val" id="metric-streak">0</div><div class="m-lbl">Day streak</div></div>
+      <div class="metric"><div class="m-icon"><i class="ti ti-medal"></i></div><div class="m-val" id="metric-rank">Bronze</div><div class="m-lbl">Member rank</div></div>
+      <div class="metric"><div class="m-icon"><i class="ti ti-trending-up"></i></div><div class="m-val" id="metric-total">$0</div><div class="m-lbl">All-time earned</div></div>
+    </div>
+    <div id="dashboard-plan-info" style="margin-bottom:20px;"></div>
+    <div class="history-title">Earning history</div>
+    <div class="history-list" id="history-list">
+      <div class="empty-state">
+        <i class="ti ti-clipboard-x"></i>
+        <p>No surveys completed yet.<br>Start earning by taking your first survey.</p>
+        <button class="btn-primary" onclick="showPage('surveys')"><i class="ti ti-clipboard-list"></i> Browse surveys</button>
+      </div>
+    </div>
+    <div class="history-title" style="margin-top:28px;">Cashout requests</div>
+    <div class="history-list" id="payout-history-list">
+      <div class="empty-state"><i class="ti ti-wallet-off"></i><p>No cashout requests yet.</p></div>
+    </div>
+    <div style="margin-top:32px;padding:20px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg-secondary);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <span style="width:44px;height:44px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="ti ti-headset" style="font-size:22px;color:var(--accent);"></i>
+        </span>
+        <div>
+          <div style="font-weight:600;font-size:14px;">Need help?</div>
+          <div style="font-size:13px;color:var(--text-secondary);">Contact our support team via WhatsApp or email.</div>
+        </div>
+      </div>
+      <button class="btn-primary" style="flex-shrink:0;" onclick="openContact()"><i class="ti ti-headset"></i> Contact Support</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING PAGE -->
+<div class="page" id="page-pricing">
+  <div class="pricing-wrap">
+    <h2>Choose your package</h2>
+    <p>Select a duration, pick your investment tier, and start earning the same day we activate your account.</p>
+    <div id="pricing-current-plan"></div>
+
+    <!-- 3 Day Package tabs -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;">
+      <button class="day-tab" id="tab-d10" onclick="selectDayTab('d10')">
+        <div style="font-size:22px;font-weight:700;">10</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;color:inherit;opacity:0.8;margin-top:3px;">30 surveys · 3/day</div>
+      </button>
+      <button class="day-tab" id="tab-d20" onclick="selectDayTab('d20')">
+        <div style="font-size:22px;font-weight:700;">20</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;color:inherit;opacity:0.8;margin-top:3px;">80 surveys · 4/day</div>
+      </button>
+      <button class="day-tab" id="tab-d30" onclick="selectDayTab('d30')">
+        <div style="font-size:22px;font-weight:700;">30</div>
+        <div style="font-size:13px;font-weight:500;">Days</div>
+        <div style="font-size:12px;color:inherit;opacity:0.8;margin-top:3px;">150 surveys · 5/day</div>
+      </button>
+    </div>
+
+    <!-- Plan cards shown after tab selection -->
+    <div id="pricing-plans-wrap" style="display:none;text-align:left;">
+      <div id="pricing-day-label" style="font-size:16px;font-weight:600;margin-bottom:16px;"></div>
+      <div id="pricing-plans-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;"></div>
+    </div>
+    <div id="pricing-tap-prompt" style="text-align:center;padding:32px 0;color:var(--text-secondary);font-size:15px;">
+      <i class="ti ti-hand-click" style="font-size:32px;display:block;margin-bottom:12px;color:var(--text-tertiary);"></i>
+      Select a day package above to see pricing
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE WALL MODAL -->
+<div class="modal-backdrop" id="upgrade-wall-modal">
+  <div class="modal" style="max-width:480px;text-align:center;">
+    <button class="modal-close" style="float:right;" onclick="document.getElementById('upgrade-wall-modal').classList.remove('show')">&times;</button>
+    <div style="width:64px;height:64px;border-radius:50%;background:#FAEEDA;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <i class="ti ti-lock" style="font-size:28px;color:#854F0B;"></i>
+    </div>
+    <div id="upgrade-wall-title" style="font-size:20px;font-weight:700;margin-bottom:8px;">Upgrade to take surveys</div>
+    <div id="upgrade-wall-desc" style="font-size:14px;color:var(--text-secondary);margin-bottom:28px;line-height:1.7;"></div>
+    <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:10px;" onclick="document.getElementById('upgrade-wall-modal').classList.remove('show');showPage('pricing');">View packages &amp; pricing &rarr;</button>
+    <button class="btn-secondary" style="width:100%;" onclick="document.getElementById('upgrade-wall-modal').classList.remove('show');">Close</button>
+  </div>
+</div>
+
+<!-- UPGRADE INFO MODAL -->
+<div class="modal-backdrop" id="upgrade-modal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title" id="upgrade-modal-title">Upgrade to Pro</div>
+      <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.remove('show')">&times;</button>
+    </div>
+    <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;">How to upgrade:</div>
+      <ol style="font-size:14px;color:var(--text);padding-left:18px;line-height:2;">
+        <li>Send payment to the bank account below</li>
+        <li>Use your <strong>registered email</strong> as the payment reference</li>
+        <li>Contact us or wait — admin will upgrade your account within 24h</li>
+      </ol>
+    </div>
+    <div style="background:#E8F9F0;border:0.5px solid #6FCF97;border-radius:var(--radius-md);padding:12px;margin-bottom:12px;font-size:13px;text-align:center;color:#1a1a1a;">
+      Send payment proof to WhatsApp: <strong style="color:#219653;">03298937377</strong>
+    </div>
+    <!-- Easypaisa -->
+    <div style="background:#E8F9F0;border:0.5px solid #6FCF97;border-radius:var(--radius-md);padding:14px;margin-bottom:12px;">
+      <div style="font-size:11px;color:#219653;font-weight:700;letter-spacing:.05em;margin-bottom:8px;">EASYPAISA</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account number</span><strong style="color:#219653;">03087159216</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account title</span><strong style="color:#1a1a1a;">Abul Hassan</strong></div>
+      </div>
+    </div>
+    <!-- JazzCash -->
+    <div style="background:#FFF0E8;border:0.5px solid #F2994A;border-radius:var(--radius-md);padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;color:#EB5757;font-weight:700;letter-spacing:.05em;margin-bottom:8px;">JAZZCASH</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;">
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account number</span><strong style="color:#EB5757;">03051393794</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#555;">Account title</span><strong style="color:#1a1a1a;">Shah Jahan</strong></div>
+      </div>
+    </div>
+    <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:12px;font-size:13px;color:var(--text-secondary);text-align:center;">
+      Use your email <strong id="upgrade-ref" style="color:var(--accent);">your@email.com</strong> as payment reference.<br>Account will be activated within 24 hours.
+    </div>
+    <div style="background:#E8F9F0;border:0.5px solid #6FCF97;border-radius:var(--radius-md);padding:12px;margin-top:10px;font-size:13px;text-align:center;color:#1a1a1a;">
+      Send payment proof to WhatsApp: <strong style="color:#219653;">03298937377</strong>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+      <button onclick="history.go(-1)||showPage('dashboard')" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:22px;padding:0;"><i class="ti ti-arrow-left"></i></button>
+      <h2 style="font-size:22px;font-weight:700;margin:0;">My Profile</h2>
+    </div>
+
+    <!-- Avatar upload -->
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:28px;">
+      <div id="profile-avatar-wrap" style="position:relative;width:96px;height:96px;margin-bottom:12px;">
+        <div id="profile-avatar-display" style="width:96px;height:96px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;border:2px solid var(--accent-mid);overflow:hidden;"></div>
+        <label for="avatar-upload" style="position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--bg);">
+          <i class="ti ti-camera" style="font-size:13px;color:#fff;"></i>
+        </label>
+        <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)" />
+      </div>
+      <div id="profile-name-display" style="font-size:16px;font-weight:600;"></div>
+      <div id="profile-email-display" style="font-size:13px;color:var(--text-secondary);margin-top:2px;"></div>
+    </div>
+
+    <!-- Profile form -->
+    <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div class="field-row">
+        <div class="field">
+          <label>First name</label>
+          <div class="input-group"><i class="ti ti-user"></i><input type="text" id="profile-first" placeholder="First name" /></div>
+        </div>
+        <div class="field">
+          <label>Last name</label>
+          <div class="input-group"><i class="ti ti-user"></i><input type="text" id="profile-last" placeholder="Last name" /></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email address <span style="font-size:11px;color:var(--text-tertiary);">(cannot be changed)</span></label>
+        <div class="input-group">
+          <i class="ti ti-mail"></i>
+          <input type="email" id="profile-email" placeholder="Email" disabled style="opacity:0.6;cursor:not-allowed;" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phone number</label>
+          <div class="input-group"><i class="ti ti-phone"></i><input type="tel" id="profile-phone" placeholder="03XX XXXXXXX" /></div>
+        </div>
+        <div class="field">
+          <label>WhatsApp number</label>
+          <div class="input-group"><i class="ti ti-brand-whatsapp"></i><input type="tel" id="profile-whatsapp" placeholder="03XX XXXXXXX" /></div>
+        </div>
+      </div>
+      <div style="border-top:0.5px solid var(--border);margin:16px 0 20px;"></div>
+      <div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;">Change password <span style="font-weight:400;">(leave blank to keep current)</span></div>
+      <div class="field">
+        <label>New password</label>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input type="password" id="profile-newpass" placeholder="Min. 8 characters" />
+          <button class="eye-btn" onclick="togglePass('profile-newpass',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Confirm new password</label>
+        <div class="input-group">
+          <i class="ti ti-lock-check"></i>
+          <input type="password" id="profile-confirmpass" placeholder="Repeat new password" />
+        </div>
+      </div>
+      <div id="profile-msg" style="display:none;padding:10px 14px;border-radius:var(--radius-md);font-size:13px;margin-bottom:12px;"></div>
+      <button class="btn-primary" style="width:100%;justify-content:center;" onclick="saveProfile()"><i class="ti ti-device-floppy"></i> Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div class="admin-wrap">
+
+    <!-- PIN GATE -->
+    <div id="admin-pin-gate" class="admin-pin-gate">
+      <div class="admin-pin-card">
+        <i class="ti ti-shield-lock"></i>
+        <h3>Admin access</h3>
+        <p>Enter the 4-digit PIN to view the admin panel. Default PIN is <strong>1234</strong>.</p>
+        <div class="pin-input">
+          <input type="password" maxlength="1" id="pin1" oninput="pinNext(this,'pin2')" onkeydown="pinBack(event,this,null)" />
+          <input type="password" maxlength="1" id="pin2" oninput="pinNext(this,'pin3')" onkeydown="pinBack(event,this,'pin1')" />
+          <input type="password" maxlength="1" id="pin3" oninput="pinNext(this,'pin4')" onkeydown="pinBack(event,this,'pin2')" />
+          <input type="password" maxlength="1" id="pin4" oninput="pinNext(this,null)" onkeydown="pinBack(event,this,'pin3')" />
+        </div>
+        <div class="pin-error" id="pin-error"></div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="checkPin()"><i class="ti ti-login"></i> Enter admin</button>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-dashboard" style="display:none;">
+      <div class="admin-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <h2>Admin panel</h2>
+          <span class="admin-badge">PRIVATE</span>
+        </div>
+        <button class="btn-secondary" onclick="lockAdmin()"><i class="ti ti-lock" style="font-size:14px;vertical-align:-2px;"></i> Lock</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat"><div class="a-val" id="adm-total-users">0</div><div class="a-lbl">Total users</div></div>
+        <div class="admin-stat"><div class="a-val" id="adm-today-users">0</div><div class="a-lbl">Joined today</div></div>
+        <div class="admin-stat"><div class="a-val" id="adm-active-plans">0</div><div class="a-lbl">Active plans</div></div>
+        <div class="admin-stat"><div class="a-val" id="adm-no-plan">0</div><div class="a-lbl">No plan</div></div>
+      </div>
+
+      <div class="admin-search-wrap">
+        <i class="ti ti-search"></i>
+        <input class="admin-search" type="text" placeholder="Search by name or email…" oninput="renderAdminTable(this.value)" />
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-md);padding:10px 16px;font-size:13px;"><span style="color:var(--text-secondary);">No plan: </span><strong id="adm-count-noplan">0</strong></div>
+        <div style="background:#E6F1FB;border:0.5px solid #B5D4F4;border-radius:var(--radius-md);padding:10px 16px;font-size:13px;color:#185FA5;"><span>10 Days: </span><strong id="adm-count-d10">0</strong></div>
+        <div style="background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--radius-md);padding:10px 16px;font-size:13px;color:#3C3489;"><span>20 Days: </span><strong id="adm-count-d20">0</strong></div>
+        <div style="background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--radius-md);padding:10px 16px;font-size:13px;color:#854F0B;"><span>30 Days: </span><strong id="adm-count-d30">0</strong></div>
+      </div>
+      <div id="admin-table-wrap"></div>
+
+      <!-- PAYOUT REQUESTS SECTION -->
+      <div style="margin-top:40px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <h3 style="font-size:16px;font-weight:600;margin:0;">Payout Requests</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-secondary" style="font-size:13px;padding:7px 14px;" onclick="filterPayouts('all')" id="pf-all">All</button>
+            <button class="btn-secondary" style="font-size:13px;padding:7px 14px;" onclick="filterPayouts('pending')" id="pf-pending">Pending</button>
+            <button class="btn-secondary" style="font-size:13px;padding:7px 14px;" onclick="filterPayouts('processing')" id="pf-processing">Processing</button>
+            <button class="btn-secondary" style="font-size:13px;padding:7px 14px;" onclick="filterPayouts('paid')" id="pf-paid">Paid</button>
+          </div>
+        </div>
+        <div id="admin-payouts-wrap"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- QUIZ MODAL -->
+<div class="modal-backdrop" id="quiz-modal" onclick="handleBackdropClick(event)">
+  <div class="modal" id="quiz-content"></div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-backdrop" id="withdraw-modal" onclick="handleWithdrawBackdrop(event)">
+  <div class="modal">
+    <div id="withdraw-form">
+      <div class="modal-header">
+        <div class="modal-title">Cashout request</div>
+        <button class="modal-close" onclick="closeWithdraw()">&times;</button>
+      </div>
+      <div class="field">
+        <label>Cashout method</label>
+        <select id="payout-method" onchange="updateWithdrawFields()">
+          <option value="bank">Bank Account</option>
+          <option value="easypaisa">Easypaisa</option>
+          <option value="jazzcash">JazzCash</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Amount (min PKR 300)</label>
+        <input type="number" id="withdraw-amount" min="300" step="1" placeholder="0" />
+      </div>
+      <!-- Bank Account fields -->
+      <div id="fields-bank">
+        <div class="field"><label>Bank name</label><input type="text" id="w-bank-name" placeholder="e.g. HBL, UBL, Meezan" /></div>
+        <div class="field"><label>Account number</label><input type="text" id="w-bank-acc" placeholder="Account number" /></div>
+        <div class="field"><label>Account title</label><input type="text" id="w-bank-title" placeholder="Full name on account" /></div>
+      </div>
+      <!-- Easypaisa fields -->
+      <div id="fields-easypaisa" style="display:none;">
+        <div class="field"><label>Easypaisa number</label><input type="text" id="w-ep-acc" placeholder="03XX XXXXXXX" /></div>
+        <div class="field"><label>Account title</label><input type="text" id="w-ep-title" placeholder="Name on account" /></div>
+      </div>
+      <!-- JazzCash fields -->
+      <div id="fields-jazzcash" style="display:none;">
+        <div class="field"><label>JazzCash number</label><input type="text" id="w-jc-acc" placeholder="03XX XXXXXXX" /></div>
+        <div class="field"><label>Account title</label><input type="text" id="w-jc-title" placeholder="Name on account" /></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button class="btn-secondary" style="flex:1;" onclick="closeWithdraw()">Cancel</button>
+        <button class="btn-primary" style="flex:1;justify-content:center;" onclick="submitWithdraw()">Submit request</button>
+      </div>
+    </div>
+    <div id="withdraw-success" style="display:none;">
+      <div class="modal-header">
+        <div class="modal-title">Request submitted</div>
+        <button class="modal-close" onclick="closeWithdraw()">&times;</button>
+      </div>
+      <div class="success-screen">
+        <i class="ti ti-circle-check"></i>
+        <h3>Cashout request received!</h3>
+        <p>Your request is now <strong>pending</strong>. We'll process it within 1–3 business days. You can track the status in your dashboard.</p>
+        <button class="btn-primary" style="margin-top:20px;" onclick="closeWithdraw();showPage('dashboard');">View dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 SurveyEarn &mdash; <a href="#">Privacy Policy</a> &middot; <a href="#">Terms of Service</a> &middot; <a href="#" onclick="openContact();return false;">Contact</a> &middot; <a href="#" onclick="openAdmin();return false;" style="color:var(--text-tertiary);font-size:11px;">&#9679;</a>
+</footer>
+
+<!-- CONTACT MODAL -->
+<div class="modal-backdrop" id="contact-modal" onclick="if(event.target===this)closeContact()">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-headset"></i> Contact &amp; Support</div>
+      <button class="modal-close" onclick="closeContact()"><i class="ti ti-x"></i></button>
+    </div>
+    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">Reach us through any of the channels below — we typically respond within a few hours.</p>
+    <a href="https://wa.me/923298937377" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-md);text-decoration:none;margin-bottom:12px;background:var(--bg-secondary);">
+      <span style="width:42px;height:42px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="ti ti-brand-whatsapp" style="font-size:22px;color:#fff;"></i>
+      </span>
+      <div>
+        <div style="font-weight:600;color:var(--text);font-size:14px;">WhatsApp</div>
+        <div style="color:var(--text-secondary);font-size:13px;">03298937377</div>
+      </div>
+      <i class="ti ti-external-link" style="margin-left:auto;color:var(--text-tertiary);"></i>
+    </a>
+    <a href="mailto:survey.earn@outlook.com" style="display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-md);text-decoration:none;background:var(--bg-secondary);">
+      <span style="width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="ti ti-mail" style="font-size:20px;color:#fff;"></i>
+      </span>
+      <div>
+        <div style="font-weight:600;color:var(--text);font-size:14px;">Email</div>
+        <div style="color:var(--text-secondary);font-size:13px;">survey.earn@outlook.com</div>
+      </div>
+      <i class="ti ti-external-link" style="margin-left:auto;color:var(--text-tertiary);"></i>
+    </a>
+  </div>
+</div>
+
+<script>
+const ADMIN_PIN = '7933';
+
+const DAY_PACKAGES = {
+  d10: {
+    label: '10 Days', days: 10, totalSurveys: 30, daily: 3,
+    plans: [
+      { id:'d10_p1', name:'Basic',    cost:1500,  dailyPayout:180, totalPayout:1800  },
+      { id:'d10_p2', name:'Standard', cost:3000,  dailyPayout:370, totalPayout:3700  },
+      { id:'d10_p3', name:'Premium',  cost:6000,  dailyPayout:750, totalPayout:7500  },
+    ]
+  },
+  d20: {
+    label: '20 Days', days: 20, totalSurveys: 80, daily: 4,
+    plans: [
+      { id:'d20_p1', name:'Basic',    cost:1500,  dailyPayout:100, totalPayout:2000  },
+      { id:'d20_p2', name:'Standard', cost:3000,  dailyPayout:225, totalPayout:4500  },
+      { id:'d20_p3', name:'Premium',  cost:6000,  dailyPayout:450, totalPayout:9000  },
+    ]
+  },
+  d30: {
+    label: '30 Days', days: 30, totalSurveys: 150, daily: 5,
+    plans: [
+      { id:'d30_p1', name:'Basic',    cost:3000,  dailyPayout:180, totalPayout:5400  },
+      { id:'d30_p2', name:'Standard', cost:6000,  dailyPayout:350, totalPayout:10500 },
+      { id:'d30_p3', name:'Premium',  cost:10000, dailyPayout:600, totalPayout:18000 },
+    ]
+  }
+};
+
+function getUserPackage() {
+  if (!currentUser || !currentUser.packageKey) return null;
+  const pkg = DAY_PACKAGES[currentUser.packageKey];
+  const plan = pkg ? pkg.plans[currentUser.planIdx || 0] : null;
+  return pkg && plan ? { ...pkg, plan } : null;
+}
+
+function saveToStorage() {
+  localStorage.setItem('se_users', JSON.stringify(users));
+  if (currentUser) {
+    localStorage.setItem('se_session', currentUser.email);
+    localStorage.setItem('se_balance_' + currentUser.email, balance);
+    localStorage.setItem('se_total_' + currentUser.email, totalEarned);
+    localStorage.setItem('se_history_' + currentUser.email, JSON.stringify(completedSurveys));
+    const doneSurveys = surveys.filter(s => s.done).map(s => s.id);
+    localStorage.setItem('se_done_' + currentUser.email, JSON.stringify(doneSurveys));
+    if (currentUser.packageKey !== undefined) {
+      localStorage.setItem('se_pkg_' + currentUser.email, currentUser.packageKey || '');
+      localStorage.setItem('se_pkgidx_' + currentUser.email, currentUser.planIdx !== undefined ? currentUser.planIdx : '');
+    }
+    if (currentUser.packageActivatedDate) {
+      localStorage.setItem('se_pkg_date_' + currentUser.email, currentUser.packageActivatedDate);
+    }
+  }
+}
+
+function loadUserData(email) {
+  balance = parseFloat(localStorage.getItem('se_balance_' + email) || '0');
+  totalEarned = parseFloat(localStorage.getItem('se_total_' + email) || '0');
+  completedSurveys = JSON.parse(localStorage.getItem('se_history_' + email) || '[]');
+  const doneSurveys = JSON.parse(localStorage.getItem('se_done_' + email) || '[]');
+  surveys.forEach(s => s.done = doneSurveys.includes(s.id));
+  // Load package activation date into currentUser if available
+  const pkgDate = localStorage.getItem('se_pkg_date_' + email);
+  if (pkgDate && currentUser) currentUser.packageActivatedDate = pkgDate;
+  // Also load packageStartIdx if stored in users object
+  if (users[email] && users[email].packageActivatedDate && currentUser) {
+    currentUser.packageActivatedDate = users[email].packageActivatedDate;
+  }
+  if (users[email] && users[email].packageStartIdx !== undefined && currentUser) {
+    currentUser.packageStartIdx = users[email].packageStartIdx;
+  }
+}
+
+const storedUsers = localStorage.getItem('se_users');
+const users = storedUsers ? JSON.parse(storedUsers) : {};
+let currentUser = null;
+let adminUnlocked = false;
+
+function pinNext(el, nextId) {
+  if (el.value && nextId) document.getElementById(nextId).focus();
+  if (!nextId) checkPin();
+}
+function pinBack(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
+}
+function checkPin() {
+  const pin = ['pin1','pin2','pin3','pin4'].map(id => document.getElementById(id).value).join('');
+  if (pin === ADMIN_PIN) {
+    adminUnlocked = true;
+    document.getElementById('admin-pin-gate').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    renderAdminTable('');
+    filterPayouts('all');
+  } else {
+    document.getElementById('pin-error').textContent = 'Incorrect PIN. Please try again.';
+    ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pin1').focus();
+  }
+}
+function lockAdmin() {
+  adminUnlocked = false;
+  ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('admin-pin-gate').style.display = 'flex';
+  document.getElementById('admin-dashboard').style.display = 'none';
+}
+
+function upgradeUser(email, packageKey, planIdx) {
+  if (!users[email]) return;
+  users[email].packageKey = packageKey;
+  users[email].planIdx = parseInt(planIdx);
+
+  // Record how many surveys the user has done so far — new package quota starts from here
+  const prevHistory = JSON.parse(localStorage.getItem('se_history_' + email) || '[]');
+  users[email].packageStartIdx = prevHistory.length;
+
+  // Set activation date so the package counts down from today
+  users[email].packageActivatedDate = new Date().toISOString();
+
+  // Reset done-survey flags so surveys are available again on the new package
+  localStorage.setItem('se_done_' + email, JSON.stringify([]));
+  // Reset day streak for new package
+  localStorage.setItem('se_streak_' + email, '0');
+  localStorage.removeItem('se_streak_date_' + email);
+
+  localStorage.setItem('se_users', JSON.stringify(users));
+
+  if (currentUser && currentUser.email === email) {
+    currentUser.packageKey = packageKey;
+    currentUser.planIdx = parseInt(planIdx);
+    currentUser.packageStartIdx = users[email].packageStartIdx;
+    currentUser.packageActivatedDate = users[email].packageActivatedDate;
+    surveys.forEach(s => s.done = false);
+    saveToStorage();
+    renderSurveys(currentFilter || 'all');
+  }
+
+  renderAdminTable(document.querySelector('.admin-search') ? document.querySelector('.admin-search').value : '');
+  filterPayouts('all');
+  const pkg = DAY_PACKAGES[packageKey];
+  const plan = pkg.plans[parseInt(planIdx)];
+  alert('✓ ' + users[email].first + ' upgraded to ' + pkg.label + ' — ' + plan.name + '. Previous earnings & history preserved.');
+}
+
+function renderAdminTable(query) {
+  const list = Object.values(users).filter(u =>
+    (u.first + ' ' + u.last + ' ' + u.email).toLowerCase().includes(query.toLowerCase())
+  );
+  const today = new Date().toLocaleDateString();
+  const allUsers = Object.values(users);
+  document.getElementById('adm-total-users').textContent = allUsers.length;
+  document.getElementById('adm-today-users').textContent = allUsers.filter(u => u.joinedDate === today).length;
+  document.getElementById('adm-active-plans').textContent = allUsers.filter(u => u.packageKey).length;
+  document.getElementById('adm-no-plan').textContent = allUsers.filter(u => !u.packageKey).length;
+  document.getElementById('adm-count-noplan').textContent = allUsers.filter(u => !u.packageKey).length;
+  document.getElementById('adm-count-d10').textContent = allUsers.filter(u => u.packageKey === 'd10').length;
+  document.getElementById('adm-count-d20').textContent = allUsers.filter(u => u.packageKey === 'd20').length;
+  document.getElementById('adm-count-d30').textContent = allUsers.filter(u => u.packageKey === 'd30').length;
+
+  const wrap = document.getElementById('admin-table-wrap');
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="admin-empty"><i class="ti ti-users"></i>No users found.</div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>WhatsApp</th>
+          <th>Memorable Word</th>
+          <th>Joined</th>
+          <th>Current plan</th>
+          <th>Upgrade to</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(u => {
+          const pkgKey = u.packageKey || '';
+          const pidx = u.planIdx !== undefined ? u.planIdx : 0;
+          let badgeHtml;
+          if (!pkgKey) {
+            badgeHtml = '<span class="plan-badge plan-free">No plan</span>';
+          } else {
+            const pkg = DAY_PACKAGES[pkgKey];
+            const plan = pkg && pkg.plans[pidx] ? pkg.plans[pidx] : null;
+            const badgeStyles = {
+              d10: 'background:#E6F1FB;color:#185FA5;',
+              d20: 'background:var(--accent-light);color:var(--accent-dark);',
+              d30: 'background:#FAEEDA;color:#854F0B;'
+            };
+            const st = badgeStyles[pkgKey] || '';
+            badgeHtml = `<span class="plan-badge" style="${st}">${pkg ? pkg.label : pkgKey}${plan ? ' · ' + plan.name : ''}</span>`;
+          }
+          const uid = u.email.replace(/[@.]/g,'_');
+          return `
+          <tr>
+            <td>
+              ${u.avatar
+                ? `<img src="${u.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;border:0.5px solid var(--border);" />`
+                : `<span class="user-avatar-sm">${u.first[0]}${u.last[0]}</span>`}
+              ${u.first} ${u.last}
+            </td>
+            <td style="color:var(--text-secondary);font-size:13px;">${u.email}</td>
+            <td style="color:var(--text-secondary);font-size:13px;">${u.phone || '—'}</td>
+            <td style="font-size:13px;"><span style="color:#219653;font-weight:500;">${u.whatsapp || '—'}</span></td>
+            <td style="color:var(--text-secondary);font-size:13px;">${u.memWord || '—'}</td>
+            <td style="color:var(--text-secondary);font-size:13px;">${u.joinedDate}</td>
+            <td>${badgeHtml}</td>
+            <td style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <select class="plan-select" id="pkgsel-${uid}">
+                <option value="d10" ${pkgKey==='d10'?'selected':''}>10 Days</option>
+                <option value="d20" ${pkgKey==='d20'?'selected':''}>20 Days</option>
+                <option value="d30" ${pkgKey==='d30'?'selected':''}>30 Days</option>
+              </select>
+              <select class="plan-select" id="tiersel-${uid}">
+                <option value="0" ${pidx===0?'selected':''}>Basic</option>
+                <option value="1" ${pidx===1?'selected':''}>Standard</option>
+                <option value="2" ${pidx===2?'selected':''}>Premium</option>
+              </select>
+              <button class="upgrade-btn" onclick="upgradeUser('${u.email}', document.getElementById('pkgsel-${uid}').value, document.getElementById('tiersel-${uid}').value)">Save</button>
+              <button class="upgrade-btn" style="background:#E24B4A;color:#fff;border:none;" onclick="adminResetPassword('${u.email}')">Reset Pass</button>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function adminResetPassword(email) {
+  const newPass = prompt('Enter new password for ' + email + ':');
+  if (!newPass) return;
+  if (newPass.length < 8) { alert('Password must be at least 8 characters.'); return; }
+  if (!users[email]) { alert('User not found.'); return; }
+  users[email].password = newPass;
+  localStorage.setItem('se_users', JSON.stringify(users));
+  alert('Password reset successfully for ' + email);
+}
+
+function openAdmin() {
+  if (adminUnlocked) {
+    document.getElementById('admin-pin-gate').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+    renderAdminTable('');
+    filterPayouts('all');
+  } else {
+    document.getElementById('admin-pin-gate').style.display = 'flex';
+    document.getElementById('admin-dashboard').style.display = 'none';
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-admin').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function openAuth(tab) {
+  switchAuthTab(tab || 'login');
+  showPage('auth');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  clearAuthMessages();
+}
+
+function showForgot() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('forgot-form').style.display = 'block';
+  document.getElementById('forgot-step1').style.display = 'block';
+  document.getElementById('forgot-step2').style.display = 'none';
+  forgotEmail = null;
+  clearAuthMessages();
+}
+
+function clearAuthMessages() {
+  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-success').classList.remove('show');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('auth-success').classList.remove('show');
+}
+
+function showAuthSuccess(msg) {
+  const el = document.getElementById('auth-success');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  const showing = inp.type === 'text';
+  inp.type = showing ? 'password' : 'text';
+  btn.querySelector('i').className = showing ? 'ti ti-eye' : 'ti ti-eye-off';
+}
+
+function toggleSignupPass() {
+  const pw  = document.getElementById('signup-password');
+  const cfm = document.getElementById('signup-confirm');
+  const eye = document.getElementById('signup-eye');
+  const showing = pw.type === 'text';
+  pw.type  = showing ? 'password' : 'text';
+  cfm.type = showing ? 'password' : 'text';
+  eye.querySelector('i').className = showing ? 'ti ti-eye' : 'ti ti-eye-off';
+}
+
+function checkStrength(val) {
+  const segs = [document.getElementById('str1'), document.getElementById('str2'), document.getElementById('str3'), document.getElementById('str4')];
+  const lbl = document.getElementById('str-label');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#E24B4A','#EF9F27','#1D9E75','#1D9E75'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  segs.forEach((s, i) => s.style.background = i < score ? colors[score - 1] : 'var(--border)');
+  lbl.textContent = val.length ? labels[score] : '';
+  lbl.style.color = score > 0 ? colors[score - 1] : 'var(--text-tertiary)';
+}
+
+function doLogin() {
+  clearAuthMessages();
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  if (!email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
+  const user = users[email.toLowerCase()];
+  if (!user || user.password !== pass) { showAuthError('Incorrect email or password. Please try again.'); return; }
+  loginSuccess(user);
+}
+
+function doSignup() {
+  clearAuthMessages();
+  const first     = document.getElementById('signup-first').value.trim();
+  const last      = document.getElementById('signup-last').value.trim();
+  const email     = document.getElementById('signup-email').value.trim();
+  const pass      = document.getElementById('signup-password').value;
+  const confirm   = document.getElementById('signup-confirm').value;
+  const phone     = document.getElementById('signup-phone').value.trim();
+  const whatsapp  = document.getElementById('signup-whatsapp').value.trim();
+  const memWord   = document.getElementById('signup-memword').value.trim();
+  const agreed    = document.getElementById('agree-terms').checked;
+  if (!first || !last) { showAuthError('Please enter your first and last name.'); return; }
+  if (!email || !email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
+  if (pass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+  if (pass !== confirm) { showAuthError('Passwords do not match.'); return; }
+  if (!whatsapp) { showAuthError('WhatsApp number is required.'); return; }
+  if (!memWord) { showAuthError('Please enter a memorable word for password recovery.'); return; }
+  if (!agreed) { showAuthError('Please agree to the Terms of Service to continue.'); return; }
+  if (users[email.toLowerCase()]) { showAuthError('An account with this email already exists.'); return; }
+  const user = { first, last, email: email.toLowerCase(), password: pass, phone, whatsapp, memWord, method: 'email', joinedDate: new Date().toLocaleDateString() };
+  users[email.toLowerCase()] = user;
+  localStorage.setItem('se_users', JSON.stringify(users));
+  loginSuccess(user);
+}
+
+let forgotEmail = null;
+function doForgotVerify() {
+  clearAuthMessages();
+  const email   = document.getElementById('forgot-email').value.trim().toLowerCase();
+  const memWord = document.getElementById('forgot-memword').value.trim();
+  if (!email || !email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
+  if (!memWord) { showAuthError('Please enter your memorable word.'); return; }
+  const u = users[email];
+  if (!u || !u.memWord || u.memWord.toLowerCase() !== memWord.toLowerCase()) {
+    showAuthError('Email or memorable word is incorrect.');
+    return;
+  }
+  forgotEmail = email;
+  document.getElementById('forgot-step1').style.display = 'none';
+  document.getElementById('forgot-step2').style.display = 'block';
+}
+function doForgotReset() {
+  clearAuthMessages();
+  const newPass  = document.getElementById('forgot-newpass').value;
+  const confirm  = document.getElementById('forgot-confirmpass').value;
+  if (newPass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+  if (newPass !== confirm) { showAuthError('Passwords do not match.'); return; }
+  if (!forgotEmail || !users[forgotEmail]) { showAuthError('Session expired. Please start again.'); return; }
+  users[forgotEmail].password = newPass;
+  localStorage.setItem('se_users', JSON.stringify(users));
+  forgotEmail = null;
+  showAuthSuccess('Password reset successfully! You can now sign in.');
+  setTimeout(() => switchAuthTab('login'), 1500);
+}
+function doForgot() { doForgotVerify(); }
+
+function doGoogleAuth() {
+  alert('Google sign-in is not available yet. Please use email and password.');
+}
+
+function updateNavAvatar() {
+  if (!currentUser) return;
+  const el = document.getElementById('nav-avatar');
+  const pic = localStorage.getItem('se_avatar_' + currentUser.email);
+  if (pic) {
+    el.innerHTML = `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  } else {
+    el.textContent = (currentUser.first[0] + currentUser.last[0]).toUpperCase();
+  }
+}
+
+function loginSuccess(user) {
+  currentUser = user;
+  loadUserData(user.email);
+  document.getElementById('nav-guest').style.display = 'none';
+  document.getElementById('nav-user').style.display = 'flex';
+  updateNavAvatar();
+  updateDayStreak();
+  saveToStorage();
+  showPage('home');
+  renderHome();
+}
+
+function logout() {
+  localStorage.removeItem('se_session');
+  currentUser = null;
+  balance = 0; totalEarned = 0; completedSurveys = [];
+  surveys.forEach(s => s.done = false);
+  document.getElementById('nav-guest').style.display = 'block';
+  document.getElementById('nav-user').style.display = 'none';
+  showPage('home');
+}
+
+const surveys = [
+  { id:1, title:'Consumer tech habits', desc:'Share how you use smartphones and apps daily.', earn:8, time:10, tag:'new', done:false,
+    questions:[
+      {q:'How many hours per day do you spend on your smartphone?', opts:['Under 1 hour','1–3 hours','3–5 hours','Over 5 hours']},
+      {q:'Which app category do you use most?', opts:['Social media','Productivity','Entertainment','Shopping']},
+      {q:'How often do you update your apps?', opts:['Manually when needed','Auto-update always','Only for critical updates','Rarely or never']},
+    ]},
+  { id:2, title:'Food & dining preferences', desc:'Tell us about your dining habits and food choices.', earn:12, time:15, tag:'high', done:false,
+    questions:[
+      {q:'How often do you cook at home?', opts:['Every day','4–6 times a week','1–3 times a week','Rarely']},
+      {q:'What best describes your diet?', opts:['Omnivore','Vegetarian','Vegan','Flexitarian']},
+      {q:'Do you use food delivery apps?', opts:['Yes, multiple times a week','Yes, occasionally','No, I prefer dining out','No, I always cook']},
+    ]},
+  { id:3, title:'Online shopping trends', desc:'Your experience buying products and services online.', earn:5, time:5, tag:'quick', done:false,
+    questions:[
+      {q:'How often do you shop online?', opts:['Daily','A few times a week','Once or twice a month','Rarely']},
+      {q:'What matters most when shopping online?', opts:['Price','Shipping speed','Brand trust','Reviews']},
+    ]},
+  { id:4, title:'Health & wellness survey', desc:'Help brands understand what wellness means to you.', earn:20, time:20, tag:'high', done:false,
+    questions:[
+      {q:'How often do you exercise?', opts:['Every day','3–5 times a week','1–2 times a week','Rarely or never']},
+      {q:'How important is mental health to your overall wellbeing?', opts:['Extremely important','Very important','Somewhat important','Not very important']},
+      {q:'Which wellness product category do you spend most on?', opts:['Supplements & vitamins','Gym & fitness','Mental health apps','Organic food']},
+    ]},
+  { id:5, title:'TV & streaming habits', desc:'Tell us what you watch and how you watch it.', earn:7, time:8, tag:'quick', done:false,
+    questions:[
+      {q:'How many streaming services do you subscribe to?', opts:['None','1','2–3','4 or more']},
+      {q:'What type of content do you prefer?', opts:['Movies','TV series','Documentaries','Reality shows']},
+    ]},
+  { id:6, title:'Personal finance attitudes', desc:'Your views on saving, investing, and spending.', earn:18, time:18, tag:'new', done:false,
+    questions:[
+      {q:'Do you follow a monthly budget?', opts:['Yes, strictly','Yes, loosely','I try to but fail often','No budget']},
+      {q:'Which best describes your investing style?', opts:['Conservative','Moderate','Aggressive','I don\'t invest']},
+      {q:'How often do you check your bank balance?', opts:['Daily','Weekly','Monthly','Rarely']},
+    ]},
+];
+
+let balance = 0;
+let totalEarned = 0;
+let completedSurveys = [];
+let currentSurvey = null;
+let currentQ = 0;
+let selectedAnswer = null;
+let currentFilter = 'all';
+
+function getSurveysUsedTotal() {
+  const startIdx = (currentUser && currentUser.packageStartIdx) ? currentUser.packageStartIdx : 0;
+  return Math.max(0, completedSurveys.length - startIdx);
+}
+
+function getSurveysUsedToday() {
+  const today = new Date().toDateString();
+  return completedSurveys.filter(c => new Date(c.date).toDateString() === today).length;
+}
+
+function getPackageDayNumber() {
+  if (!currentUser || !currentUser.packageActivatedDate) return null;
+  const start = new Date(currentUser.packageActivatedDate);
+  start.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.floor((today - start) / 86400000) + 1; // day 1, 2, 3...
+}
+
+function isPackageExpired() {
+  const up = getUserPackage();
+  if (!up || !currentUser.packageActivatedDate) return false;
+  return getPackageDayNumber() > up.days;
+}
+
+function getDaysRemaining() {
+  const up = getUserPackage();
+  if (!up || !currentUser.packageActivatedDate) return 0;
+  return Math.max(0, up.days - getPackageDayNumber() + 1);
+}
+
+function canTakeSurvey() {
+  const up = getUserPackage();
+  if (!up) return false;
+  if (isPackageExpired()) return false;
+  if (getSurveysUsedToday() >= up.daily) return false;
+  return true;
+}
+
+function getLimitReason() {
+  const up = getUserPackage();
+  if (!up) return 'no_plan';
+  if (isPackageExpired()) return 'expired';
+  if (getSurveysUsedToday() >= up.daily) return 'daily';
+  return null;
+}
+
+function getDayStreak() {
+  if (!currentUser) return 0;
+  const streak = parseInt(localStorage.getItem('se_streak_' + currentUser.email) || '0');
+  return streak;
+}
+
+function updateDayStreak() {
+  if (!currentUser) return;
+  const key = 'se_streak_' + currentUser.email;
+  const dateKey = 'se_streak_date_' + currentUser.email;
+  const lastDate = localStorage.getItem(dateKey);
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  let streak = parseInt(localStorage.getItem(key) || '0');
+  if (lastDate === today) return; // already counted today
+  if (lastDate === yesterday) { streak += 1; } // consecutive day
+  else { streak = 1; } // missed a day or first time
+  localStorage.setItem(key, streak);
+  localStorage.setItem(dateKey, today);
+}
+
+function showUpgradeWall() {
+  const reason = getLimitReason();
+  const up = getUserPackage();
+  const daysLeft = getDaysRemaining();
+  document.getElementById('upgrade-wall-title').textContent =
+    !up            ? 'Purchase a package to start earning'
+    : reason === 'expired' ? 'Package expired — buy a new one'
+    : reason === 'daily'   ? 'Daily surveys done — come back tomorrow'
+    : 'No surveys available';
+  document.getElementById('upgrade-wall-desc').textContent =
+    !up            ? 'Choose a day package below, send payment, and we\'ll activate within 24 hours.'
+    : reason === 'expired' ? 'Your ' + up.label + ' package has ended. Unused survey days are expired. Purchase a new package to keep earning.'
+    : reason === 'daily'   ? 'You\'ve completed your ' + up.daily + ' surveys for today. ' + daysLeft + ' day(s) remaining in your package. Unused slots from today cannot be carried over.'
+    : 'No surveys available right now.';
+  document.getElementById('upgrade-wall-modal').classList.add('show');
+}
+
+function showUpgradeInfo(packageKey, planIdx) {
+  const pkg = DAY_PACKAGES[packageKey];
+  const plan = pkg.plans[planIdx];
+  document.getElementById('upgrade-modal-title').textContent = pkg.label + ' — ' + plan.name + ' (PKR ' + plan.cost.toLocaleString() + ')';
+  document.getElementById('upgrade-ref').textContent = currentUser ? currentUser.email : 'your@email.com';
+  document.getElementById('upgrade-modal').classList.add('show');
+}
+
+function renderPricing() {
+  const up = getUserPackage();
+  const usedTotal = getSurveysUsedTotal();
+  const usedToday = getSurveysUsedToday();
+  const el = document.getElementById('pricing-current-plan');
+  if (currentUser && up) {
+    const totalPct = Math.round((usedTotal / up.totalSurveys) * 100);
+    const dailyPct = Math.round((usedToday / up.daily) * 100);
+    el.innerHTML = `<div class="current-plan-banner" style="flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:10px;"><i class="ti ti-shield-check" style="font-size:20px;flex-shrink:0;"></i><strong>Current package: ${up.label} — ${up.plan.name}</strong></div>
+      <div style="width:100%;">
+        <div style="font-size:13px;margin-bottom:4px;">${usedTotal} of ${up.totalSurveys} total surveys used</div>
+        <div class="surveys-left-bar"><div class="surveys-left-fill" style="width:${totalPct}%"></div></div>
+      </div>
+      <div style="width:100%;">
+        <div style="font-size:13px;margin-bottom:4px;">${usedToday} of ${up.daily} surveys used today</div>
+        <div class="surveys-left-bar"><div class="surveys-left-fill" style="width:${dailyPct}%"></div></div>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML = '';
+  }
+  // Auto-open the first tab so prices are visible immediately
+  selectDayTab(activeDayTab || 'd10');
+}
+
+let activeDayTab = null;
+
+function selectDayTab(key) {
+  activeDayTab = key;
+  document.querySelectorAll('.day-tab[id^="tab-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + key).classList.add('active');
+  const pkg = DAY_PACKAGES[key];
+  document.getElementById('pricing-tap-prompt').style.display = 'none';
+  document.getElementById('pricing-plans-wrap').style.display = 'block';
+  document.getElementById('pricing-day-label').textContent = pkg.label + ' Package — ' + pkg.totalSurveys + ' surveys total, ' + pkg.daily + ' per day';
+
+  const featuredIdx = key === 'd30' ? 2 : 1;
+  const planColors = [
+    { bg:'#E6F1FB', border:'#B5D4F4', text:'#185FA5', btn:'#185FA5' },
+    { bg:'#EEEDFE', border:'#AFA9EC', text:'#3C3489', btn:'var(--accent)', featured: featuredIdx === 1 },
+    { bg:'#FAEEDA', border:'#FAC775', text:'#854F0B', btn:'#854F0B',      featured: featuredIdx === 2 },
+  ];
+  document.getElementById('pricing-plans-grid').innerHTML = pkg.plans.map((plan, i) => {
+    const c = planColors[i];
+    return `
+    <div style="background:${c.bg};border:${c.featured ? '2px' : '0.5px'} solid ${c.border};border-radius:var(--radius-lg);padding:24px 20px;position:relative;">
+      ${c.featured ? '<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap;">Most popular</div>' : ''}
+      <div style="font-size:12px;font-weight:700;color:${c.text};letter-spacing:.05em;margin-bottom:12px;">${plan.name.toUpperCase()}</div>
+      <div style="font-size:11px;color:${c.text};margin-bottom:4px;opacity:0.8;">Package cost</div>
+      <div style="font-size:28px;font-weight:700;color:${c.text};margin-bottom:16px;">PKR ${plan.cost.toLocaleString()}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(255,255,255,0.5);border-radius:var(--radius-md);">
+          <span style="color:${c.text};opacity:0.8;">Daily payout</span>
+          <strong style="color:${c.text};">PKR ${plan.dailyPayout.toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(255,255,255,0.5);border-radius:var(--radius-md);">
+          <strong style="color:${c.text};">Total payout</strong>
+          <strong style="color:${c.text};">PKR ${plan.totalPayout.toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(0,180,80,0.15);border-radius:var(--radius-md);border:1px solid rgba(0,180,80,0.3);">
+          <strong style="color:${c.text};">Total profit</strong>
+          <strong style="color:#1a7a3c;">PKR ${(plan.totalPayout - plan.cost).toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 12px;background:rgba(255,255,255,0.35);border-radius:var(--radius-md);">
+          <span style="color:${c.text};opacity:0.8;">Surveys</span>
+          <span style="color:${c.text};">${pkg.totalSurveys} total · ${pkg.daily}/day</span>
+        </div>
+      </div>
+      <button style="width:100%;background:${c.btn};color:#fff;border:none;cursor:pointer;padding:11px;border-radius:var(--radius-md);font-size:14px;font-weight:600;" onclick="currentUser ? showUpgradeInfo('${key}',${i}) : openAuth('signup')">
+        Buy for PKR ${plan.cost.toLocaleString()}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+let activeHomeDayTab = null;
+
+function selectHomeDayTab(key) {
+  activeHomeDayTab = key;
+  document.querySelectorAll('.day-tab[id^="htab-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('htab-' + key).classList.add('active');
+  const pkg = DAY_PACKAGES[key];
+  document.getElementById('home-pricing-tap-prompt').style.display = 'none';
+  const grid = document.getElementById('home-pricing-grid');
+  grid.style.display = 'grid';
+
+  const featuredIdx = key === 'd30' ? 2 : 1;
+  const planColors = [
+    { bg:'#E6F1FB', border:'#B5D4F4', text:'#185FA5', btn:'#185FA5' },
+    { bg:'#EEEDFE', border:'#AFA9EC', text:'#3C3489', btn:'var(--accent)', featured: featuredIdx === 1 },
+    { bg:'#FAEEDA', border:'#FAC775', text:'#854F0B', btn:'#854F0B',      featured: featuredIdx === 2 },
+  ];
+  grid.innerHTML = pkg.plans.map((plan, i) => {
+    const c = planColors[i];
+    return `
+    <div style="background:${c.bg};border:${c.featured ? '2px' : '0.5px'} solid ${c.border};border-radius:var(--radius-lg);padding:24px 20px;position:relative;">
+      ${c.featured ? '<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap;">Most popular</div>' : ''}
+      <div style="font-size:12px;font-weight:700;color:${c.text};letter-spacing:.05em;margin-bottom:12px;">${plan.name.toUpperCase()}</div>
+      <div style="font-size:28px;font-weight:700;color:${c.text};margin-bottom:16px;">PKR ${plan.cost.toLocaleString()}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(255,255,255,0.5);border-radius:var(--radius-md);">
+          <span style="color:${c.text};opacity:0.8;">Daily payout</span>
+          <strong style="color:${c.text};">PKR ${plan.dailyPayout.toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(255,255,255,0.5);border-radius:var(--radius-md);">
+          <strong style="color:${c.text};">Total payout</strong>
+          <strong style="color:${c.text};">PKR ${plan.totalPayout.toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;padding:8px 12px;background:rgba(0,180,80,0.15);border-radius:var(--radius-md);border:1px solid rgba(0,180,80,0.3);">
+          <strong style="color:${c.text};">Total profit</strong>
+          <strong style="color:#1a7a3c;">PKR ${(plan.totalPayout - plan.cost).toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 12px;background:rgba(255,255,255,0.35);border-radius:var(--radius-md);">
+          <span style="color:${c.text};opacity:0.8;">Surveys</span>
+          <span style="color:${c.text};">${pkg.totalSurveys} total · ${pkg.daily}/day</span>
+        </div>
+      </div>
+      <button style="width:100%;background:${c.btn};color:#fff;border:none;cursor:pointer;padding:11px;border-radius:var(--radius-md);font-size:14px;font-weight:600;" onclick="currentUser ? showUpgradeInfo('${key}',${i}) : openAuth('signup')">
+        Buy for PKR ${plan.cost.toLocaleString()}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function showPage(id) {
+  if ((id === 'surveys' || id === 'dashboard') && !currentUser) {
+    openAuth('login');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const pages = ['home','surveys','pricing','dashboard'];
+  const btns = document.querySelectorAll('.nav-links button');
+  if (pages.indexOf(id) >= 0) btns[pages.indexOf(id)].classList.add('active');
+  if (id === 'home') renderHome();
+  if (id === 'surveys') renderSurveys(currentFilter);
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'pricing') renderPricing();
+  if (id === 'profile') renderProfile();
+  window.scrollTo(0, 0);
+}
+
+function renderHome() {
+  const up = getUserPackage();
+  const hasPlan = !!up;
+  document.getElementById('home-guest-sections').style.display = hasPlan ? 'none' : 'block';
+  document.getElementById('home-member-sections').style.display = hasPlan ? 'block' : 'none';
+  if (!hasPlan) { selectHomeDayTab(activeHomeDayTab || 'd10'); return; }
+
+  const usedTotal = getSurveysUsedTotal();
+  const usedToday = getSurveysUsedToday();
+  const remaining = up.totalSurveys - usedTotal;
+  const dailyLeft = up.daily - usedToday;
+
+  document.getElementById('home-welcome-title').textContent = 'Welcome back, ' + currentUser.first + '!';
+  document.getElementById('home-welcome-sub').textContent =
+    remaining + ' surveys left · ' + dailyLeft + ' available today · Daily payout: PKR ' + up.plan.dailyPayout.toLocaleString();
+
+  const grid = document.getElementById('home-survey-grid');
+  const canTake = canTakeSurvey();
+  grid.innerHTML = surveys.map(s => `
+    <div class="survey-card">
+      <div class="survey-badge ${s.tag === 'high' ? 'badge-high' : s.tag === 'new' ? 'badge-new' : 'badge-quick'}">
+        <i class="ti ${s.tag === 'high' ? 'ti-trending-up' : s.tag === 'new' ? 'ti-sparkles' : 'ti-clock'}"></i>
+        ${s.tag === 'high' ? 'High pay' : s.tag === 'new' ? 'New' : 'Quick'}
+      </div>
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <div class="survey-meta">
+        <span class="survey-earn" style="font-size:14px;color:var(--accent);">${s.time} min survey</span>
+        <span class="survey-time"><i class="ti ti-clock"></i>${s.time} min</span>
+      </div>
+      <button class="take-btn" onclick="startSurvey(${s.id})" ${s.done || !canTake ? 'disabled' : ''}>
+        ${s.done ? '✓ Completed' : !canTake ? (remaining <= 0 ? 'Package used' : 'Daily limit reached') : 'Take survey'}
+      </button>
+    </div>
+  `).join('');
+}
+
+function filterSurveys(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = type;
+  renderSurveys(type);
+}
+
+function renderSurveys(filter) {
+  const up = getUserPackage();
+  const grid = document.getElementById('survey-grid');
+
+  if (!up) {
+    document.getElementById('survey-count-label').textContent = '';
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:40px 24px;text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:#FAEEDA;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;"><i class="ti ti-lock" style="font-size:28px;color:#854F0B;"></i></div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:10px;">Surveys are locked</div>
+        <div style="font-size:15px;color:var(--text-secondary);max-width:400px;margin:0 auto 28px;line-height:1.7;">Purchase a package below, send payment, and we'll unlock your account within 24 hours.</div>
+        <button class="btn-primary" onclick="showPage('pricing')"><i class="ti ti-arrow-up-right"></i> View packages &amp; pricing</button>
+      </div>`;
+    return;
+  }
+
+  const usedTotal = getSurveysUsedTotal();
+  const usedToday = getSurveysUsedToday();
+  const totalHit = usedTotal >= up.totalSurveys;
+  const dailyHit = usedToday >= up.daily;
+
+  if (totalHit) {
+    document.getElementById('survey-count-label').textContent = '';
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;background:#FCEBEB;border:0.5px solid #F09595;border-radius:var(--radius-lg);padding:36px 24px;text-align:center;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#F7C1C1;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i class="ti ti-clipboard-x" style="font-size:26px;color:#A32D2D;"></i></div>
+        <div style="font-size:18px;font-weight:700;color:#A32D2D;margin-bottom:8px;">You've used all ${up.totalSurveys} surveys in your ${up.label} package</div>
+        <div style="font-size:14px;color:#791F1F;max-width:420px;margin:0 auto 24px;line-height:1.7;">Purchase a new package to keep earning. Your balance and history are safe.</div>
+        <button class="btn-primary" style="background:#A32D2D;margin-right:10px;" onclick="showPage('pricing')"><i class="ti ti-refresh"></i> Buy a new package</button>
+        <button class="btn-secondary" onclick="showPage('dashboard')">View my earnings</button>
+      </div>`;
+    return;
+  }
+
+  if (dailyHit) {
+    document.getElementById('survey-count-label').textContent = '';
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:var(--radius-lg);padding:36px 24px;text-align:center;">
+        <div style="width:60px;height:60px;border-radius:50%;background:#FAC775;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i class="ti ti-clock" style="font-size:26px;color:#633806;"></i></div>
+        <div style="font-size:18px;font-weight:700;color:#633806;margin-bottom:8px;">Daily limit reached — come back tomorrow!</div>
+        <div style="font-size:14px;color:#854F0B;max-width:420px;margin:0 auto 24px;line-height:1.7;">You've completed your ${up.daily} surveys for today. You still have <strong>${up.totalSurveys - usedTotal} surveys</strong> left in your package — they'll be available again tomorrow.</div>
+        <button class="btn-primary" onclick="showPage('dashboard')"><i class="ti ti-chart-bar"></i> View my earnings</button>
+      </div>`;
+    return;
+  }
+
+  let list = surveys;
+  if (filter === 'high') list = surveys.filter(s => s.earn >= 12);
+  else if (filter === 'quick') list = surveys.filter(s => s.time <= 10);
+  else if (filter === 'new') list = surveys.filter(s => s.tag === 'new');
+  const remaining = up.totalSurveys - usedTotal;
+  const dailyLeft = up.daily - usedToday;
+  document.getElementById('survey-count-label').textContent = list.length + ' available · ' + remaining + ' left in package · ' + dailyLeft + ' today';
+  grid.innerHTML = list.map(s => `
+    <div class="survey-card">
+      <div class="survey-badge ${s.tag === 'high' ? 'badge-high' : s.tag === 'new' ? 'badge-new' : 'badge-quick'}">
+        <i class="ti ${s.tag === 'high' ? 'ti-trending-up' : s.tag === 'new' ? 'ti-sparkles' : 'ti-clock'}"></i>
+        ${s.tag === 'high' ? 'High pay' : s.tag === 'new' ? 'New' : 'Quick'}
+      </div>
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <div class="survey-meta">
+        <span class="survey-earn" style="font-size:14px;">${s.time} min survey</span>
+        <span class="survey-time"><i class="ti ti-clock"></i>${s.time} min</span>
+      </div>
+      <button class="take-btn" onclick="startSurvey(${s.id})" ${s.done ? 'disabled' : ''}>${s.done ? '✓ Completed' : 'Take survey'}</button>
+    </div>
+  `).join('');
+}
+
+function startSurvey(id) {
+  if (!canTakeSurvey()) {
+    showUpgradeWall();
+    return;
+  }
+  currentSurvey = surveys.find(s => s.id === id);
+  currentQ = 0;
+  selectedAnswer = null;
+  document.getElementById('quiz-modal').classList.add('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const s = currentSurvey;
+  const q = s.questions[currentQ];
+  const pct = Math.round((currentQ / s.questions.length) * 100);
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">${s.title}</div>
+      <button class="modal-close" onclick="closeQuiz()">&times;</button>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="question-text">${q.q}</div>
+    <div class="options">${q.opts.map((o,i) => `<button class="option-btn" onclick="selectOption(this,${i})">${o}</button>`).join('')}</div>
+    <div class="modal-footer">
+      <span class="q-counter">Question ${currentQ+1} of ${s.questions.length}</span>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next &rarr;</button>
+    </div>
+  `;
+  selectedAnswer = null;
+}
+
+function selectOption(el, i) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAnswer = i;
+  document.getElementById('next-btn').disabled = false;
+}
+
+function nextQuestion() {
+  if (selectedAnswer === null) return;
+  currentQ++;
+  if (currentQ >= currentSurvey.questions.length) completeSurvey();
+  else renderQuestion();
+}
+
+function completeSurvey() {
+  const s = currentSurvey;
+  s.done = true;
+  const up = getUserPackage();
+  const earnAmt = up ? Math.round(up.plan.dailyPayout / up.daily) : s.earn;
+  balance += earnAmt;
+  totalEarned += earnAmt;
+  completedSurveys.unshift({ title: s.title, earn: earnAmt, date: new Date().toISOString() });
+  updateDayStreak();
+  saveToStorage();
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">Survey complete!</div>
+      <button class="modal-close" onclick="closeQuiz()">&times;</button>
+    </div>
+    <div class="complete-screen">
+      <div class="complete-icon"><i class="ti ti-circle-check"></i></div>
+      <div style="font-size:15px;color:var(--text-secondary);">You earned</div>
+      <div class="complete-earn">+PKR ${earnAmt.toLocaleString()}</div>
+      <div style="font-size:14px;color:var(--text-secondary);">Added to your balance</div>
+      <div class="complete-btns">
+        <button class="btn-secondary" onclick="closeQuiz()">More surveys</button>
+        <button class="btn-primary" onclick="closeQuiz();showPage('dashboard')"><i class="ti ti-chart-bar"></i> View balance</button>
+      </div>
+    </div>
+  `;
+}
+
+function closeQuiz() {
+  document.getElementById('quiz-modal').classList.remove('show');
+  renderSurveys(currentFilter);
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('quiz-modal')) closeQuiz();
+}
+
+function renderDashboard() {
+  document.getElementById('balance-amount').textContent = 'PKR ' + Math.round(balance).toLocaleString();
+  document.getElementById('metric-surveys').textContent = completedSurveys.length;
+  document.getElementById('metric-streak').textContent = getDayStreak();
+  document.getElementById('metric-total').textContent = 'PKR ' + Math.round(totalEarned).toLocaleString();
+  const rank = completedSurveys.length >= 5 ? 'Gold' : completedSurveys.length >= 2 ? 'Silver' : 'Bronze';
+  document.getElementById('metric-rank').textContent = rank;
+
+  const up = getUserPackage();
+  const usedTotal = getSurveysUsedTotal();
+  const usedToday = getSurveysUsedToday();
+
+  if (!up) {
+    document.getElementById('dashboard-plan-info').innerHTML = `
+      <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:4px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="width:56px;height:56px;border-radius:50%;background:#FAEEDA;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><i class="ti ti-lock" style="font-size:26px;color:#854F0B;"></i></div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:6px;">No active package</div>
+          <div style="font-size:14px;color:var(--text-secondary);max-width:380px;margin:0 auto;">Purchase a package below, send payment to our bank account, and we'll activate it within 24 hours.</div>
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+          <button class="btn-primary" onclick="showPage('pricing')"><i class="ti ti-arrow-up-right"></i> View packages &amp; pricing</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('history-list').innerHTML = `<div class="empty-state"><i class="ti ti-clipboard-x"></i><p>Purchase a package to start completing surveys and earning money.</p></div>`;
+    return;
+  }
+
+  const expired   = isPackageExpired();
+  const dailyHit  = usedToday >= up.daily;
+  const daysLeft  = getDaysRemaining();
+  const dayNum    = getPackageDayNumber() || 1;
+  const dailyPct  = Math.round((usedToday / up.daily) * 100);
+  const dayPct    = Math.round(((up.days - daysLeft) / up.days) * 100);
+
+  document.getElementById('dashboard-plan-info').innerHTML = `
+    <div style="background:${expired ? '#FCEBEB' : 'var(--bg)'};border:0.5px solid ${expired ? '#F09595' : 'var(--border)'};border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+        <div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Current package</div>
+          <div style="font-size:16px;font-weight:700;">${up.label} — ${up.plan.name}</div>
+          ${expired ? '<div style="font-size:12px;color:#A32D2D;font-weight:600;margin-top:3px;">⚠ Package expired</div>' : '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px;">Day ' + dayNum + ' of ' + up.days + ' · ' + daysLeft + ' day(s) remaining</div>'}
+        </div>
+        ${expired
+          ? `<button class="btn-primary" style="padding:8px 16px;font-size:13px;background:#A32D2D;" onclick="showPage('pricing')"><i class="ti ti-refresh"></i> Buy new package</button>`
+          : `<button class="btn-primary" style="padding:8px 16px;font-size:13px;" onclick="showPage('pricing')"><i class="ti ti-arrow-up-right"></i> Upgrade</button>`}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;">
+        <div style="background:rgba(0,0,0,0.04);border-radius:var(--radius-md);padding:10px 14px;">
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px;">Investment</div>
+          <div style="font-size:15px;font-weight:700;">PKR ${up.plan.cost.toLocaleString()}</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.04);border-radius:var(--radius-md);padding:10px 14px;">
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px;">Daily payout</div>
+          <div style="font-size:15px;font-weight:700;color:var(--green);">PKR ${up.plan.dailyPayout.toLocaleString()}</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.04);border-radius:var(--radius-md);padding:10px 14px;">
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:2px;">Total payout</div>
+          <div style="font-size:15px;font-weight:700;color:var(--accent);">PKR ${up.plan.totalPayout.toLocaleString()}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div style="font-size:12px;color:${expired ? '#A32D2D' : 'var(--text-secondary)'};margin-bottom:5px;">${expired ? '⚠ Package expired' : (up.days - daysLeft) + ' of ' + up.days + ' days elapsed'}</div>
+          <div class="surveys-left-bar"><div class="surveys-left-fill" style="width:${dayPct}%;background:${expired ? '#E24B4A' : 'var(--accent)'};"></div></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:${dailyHit ? '#854F0B' : 'var(--text-secondary)'};margin-bottom:5px;font-weight:${dailyHit ? 600 : 400};">${dailyHit ? '⚠ Daily surveys done' : usedToday + ' of ' + up.daily + ' today'}</div>
+          <div class="surveys-left-bar"><div class="surveys-left-fill" style="width:${dailyPct}%;background:${dailyHit ? '#EF9F27' : 'var(--accent)'};"></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const list = document.getElementById('history-list');
+  if (completedSurveys.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="ti ti-clipboard-x"></i><p>No surveys completed yet.<br>Start earning by taking your first survey.</p><button class="btn-primary" onclick="showPage('surveys')"><i class="ti ti-clipboard-list"></i> Browse surveys</button></div>`;
+  } else {
+    list.innerHTML = completedSurveys.map(c => `
+      <div class="history-item">
+        <div class="history-info"><h4>${c.title}</h4><p>${new Date(c.date).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}</p></div>
+        <div class="history-earn">+PKR ${Math.round(c.earn).toLocaleString()}</div>
+      </div>
+    `).join('');
+  }
+  renderPayoutHistory();
+}
+
+/* ── Payout requests ── */
+let payoutRequests = JSON.parse(localStorage.getItem('se_payouts') || '[]');
+
+function savePayouts() {
+  localStorage.setItem('se_payouts', JSON.stringify(payoutRequests));
+}
+
+function openContact() {
+  document.getElementById('contact-modal').classList.add('show');
+}
+function closeContact() {
+  document.getElementById('contact-modal').classList.remove('show');
+}
+
+function openWithdraw() {
+  document.getElementById('withdraw-modal').classList.add('show');
+  document.getElementById('withdraw-form').style.display = 'block';
+  document.getElementById('withdraw-success').style.display = 'none';
+  document.getElementById('withdraw-amount').value = '';
+  document.getElementById('payout-method').value = 'bank';
+  updateWithdrawFields();
+}
+
+function closeWithdraw() {
+  document.getElementById('withdraw-modal').classList.remove('show');
+}
+
+function handleWithdrawBackdrop(e) {
+  if (e.target === document.getElementById('withdraw-modal')) closeWithdraw();
+}
+
+function updateWithdrawFields() {
+  const method = document.getElementById('payout-method').value;
+  document.getElementById('fields-bank').style.display      = method === 'bank'       ? 'block' : 'none';
+  document.getElementById('fields-easypaisa').style.display = method === 'easypaisa'  ? 'block' : 'none';
+  document.getElementById('fields-jazzcash').style.display  = method === 'jazzcash'   ? 'block' : 'none';
+}
+
+function submitWithdraw() {
+  const amt    = parseFloat(document.getElementById('withdraw-amount').value);
+  const method = document.getElementById('payout-method').value;
+  if (!amt || amt < 300) { alert('Minimum cashout amount is PKR 300'); return; }
+  if (amt > balance) { alert('Amount exceeds your available balance of PKR ' + Math.round(balance).toLocaleString()); return; }
+
+  let details = {};
+  if (method === 'bank') {
+    const bn = document.getElementById('w-bank-name').value.trim();
+    const ba = document.getElementById('w-bank-acc').value.trim();
+    const bt = document.getElementById('w-bank-title').value.trim();
+    if (!bn || !ba || !bt) { alert('Please fill in all bank account details.'); return; }
+    details = { bankName: bn, accNo: ba, accTitle: bt };
+  } else if (method === 'easypaisa') {
+    const ea = document.getElementById('w-ep-acc').value.trim();
+    const et = document.getElementById('w-ep-title').value.trim();
+    if (!ea || !et) { alert('Please fill in all Easypaisa details.'); return; }
+    details = { accNo: ea, accTitle: et };
+  } else if (method === 'jazzcash') {
+    const ja = document.getElementById('w-jc-acc').value.trim();
+    const jt = document.getElementById('w-jc-title').value.trim();
+    if (!ja || !jt) { alert('Please fill in all JazzCash details.'); return; }
+    details = { accNo: ja, accTitle: jt };
+  }
+
+  balance -= amt;
+  saveToStorage();
+  document.getElementById('balance-amount').textContent = 'PKR ' + Math.round(balance).toLocaleString();
+
+  const req = {
+    id: Date.now().toString(),
+    email: currentUser.email,
+    name: currentUser.first + ' ' + currentUser.last,
+    amount: amt,
+    method,
+    details,
+    status: 'pending',
+    date: new Date().toISOString()
+  };
+  payoutRequests.push(req);
+  savePayouts();
+
+  document.getElementById('withdraw-form').style.display = 'none';
+  document.getElementById('withdraw-success').style.display = 'block';
+}
+
+/* ── Profile ── */
+function renderProfile() {
+  if (!currentUser) { showPage('home'); return; }
+  const u = currentUser;
+  const pic = localStorage.getItem('se_avatar_' + u.email);
+
+  // Avatar display
+  const disp = document.getElementById('profile-avatar-display');
+  if (pic) {
+    disp.innerHTML = `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;" />`;
+  } else {
+    disp.textContent = (u.first[0] + u.last[0]).toUpperCase();
+  }
+
+  document.getElementById('profile-name-display').textContent  = u.first + ' ' + u.last;
+  document.getElementById('profile-email-display').textContent = u.email;
+  document.getElementById('profile-first').value     = u.first || '';
+  document.getElementById('profile-last').value      = u.last  || '';
+  document.getElementById('profile-email').value     = u.email || '';
+  document.getElementById('profile-phone').value     = u.phone || '';
+  document.getElementById('profile-whatsapp').value  = u.whatsapp || '';
+  document.getElementById('profile-newpass').value   = '';
+  document.getElementById('profile-confirmpass').value = '';
+  const msg = document.getElementById('profile-msg');
+  msg.style.display = 'none';
+}
+
+function handleAvatarUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Resize to max 200x200 via canvas
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const size = 200;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const ratio = Math.min(size / img.width, size / img.height);
+      const w = img.width * ratio, h = img.height * ratio;
+      ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      localStorage.setItem('se_avatar_' + currentUser.email, dataUrl);
+      users[currentUser.email].avatar = dataUrl;
+      localStorage.setItem('se_users', JSON.stringify(users));
+      updateNavAvatar();
+      renderProfile();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function saveProfile() {
+  const first    = document.getElementById('profile-first').value.trim();
+  const last     = document.getElementById('profile-last').value.trim();
+  const phone    = document.getElementById('profile-phone').value.trim();
+  const whatsapp = document.getElementById('profile-whatsapp').value.trim();
+  const newpass  = document.getElementById('profile-newpass').value;
+  const confpass = document.getElementById('profile-confirmpass').value;
+  const msg      = document.getElementById('profile-msg');
+
+  if (!first || !last) { showProfileMsg('Please enter your first and last name.', 'error'); return; }
+  if (!whatsapp)       { showProfileMsg('WhatsApp number is required.', 'error'); return; }
+  if (newpass && newpass.length < 8) { showProfileMsg('New password must be at least 8 characters.', 'error'); return; }
+  if (newpass && newpass !== confpass) { showProfileMsg('Passwords do not match.', 'error'); return; }
+
+  currentUser.first    = first;
+  currentUser.last     = last;
+  currentUser.phone    = phone;
+  currentUser.whatsapp = whatsapp;
+  if (newpass) currentUser.password = newpass;
+
+  users[currentUser.email] = { ...users[currentUser.email], first, last, phone, whatsapp };
+  if (newpass) users[currentUser.email].password = newpass;
+  localStorage.setItem('se_users', JSON.stringify(users));
+  saveToStorage();
+  updateNavAvatar();
+  document.getElementById('profile-name-display').textContent = first + ' ' + last;
+  showProfileMsg('Profile updated successfully!', 'success');
+}
+
+function showProfileMsg(text, type) {
+  const el = document.getElementById('profile-msg');
+  el.textContent = text;
+  el.style.display = 'block';
+  el.style.background = type === 'success' ? 'var(--green-bg)' : '#FCEBEB';
+  el.style.color      = type === 'success' ? 'var(--green-text)' : '#A32D2D';
+  el.style.border     = type === 'success' ? '0.5px solid #5DCAA5' : '0.5px solid #F09595';
+}
+
+/* ── Admin payout requests ── */
+let payoutFilter = 'all';
+
+function filterPayouts(f) {
+  payoutFilter = f;
+  ['all','pending','processing','paid'].forEach(s => {
+    const el = document.getElementById('pf-' + s);
+    if (el) el.style.fontWeight = s === f ? '700' : '400';
+  });
+  renderAdminPayouts();
+}
+
+function updatePayoutStatus(id, status) {
+  const req = payoutRequests.find(r => r.id === id);
+  if (!req) return;
+  req.status = status;
+  savePayouts();
+  renderAdminPayouts();
+}
+
+function renderAdminPayouts() {
+  const wrap = document.getElementById('admin-payouts-wrap');
+  if (!wrap) return;
+  let list = payoutFilter === 'all' ? payoutRequests : payoutRequests.filter(r => r.status === payoutFilter);
+  list = [...list].reverse();
+
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="admin-empty"><i class="ti ti-wallet-off"></i>No ' + (payoutFilter === 'all' ? '' : payoutFilter + ' ') + 'payout requests.</div>';
+    return;
+  }
+
+  const statusColors = { pending:'#854F0B;background:#FAEEDA', processing:'#185FA5;background:#E6F1FB', paid:'#219653;background:#E8F9F0' };
+  const methodLabel  = { bank:'Bank', easypaisa:'Easypaisa', jazzcash:'JazzCash' };
+
+  wrap.innerHTML = `<table class="admin-table">
+    <thead><tr><th>User</th><th>Amount</th><th>Method</th><th>Account details</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+    ${list.map(r => {
+      const sc = statusColors[r.status] || '333;background:#eee';
+      const detailHtml = r.method === 'bank'
+        ? `${r.details.bankName}<br><small>${r.details.accNo} · ${r.details.accTitle}</small>`
+        : `${r.details.accNo}<br><small>${r.details.accTitle}</small>`;
+      return `<tr>
+        <td><strong>${r.name}</strong><br><small style="color:var(--text-secondary);">${r.email}</small></td>
+        <td><strong>PKR ${Math.round(r.amount).toLocaleString()}</strong></td>
+        <td>${methodLabel[r.method] || r.method}</td>
+        <td style="font-size:13px;">${detailHtml}</td>
+        <td style="font-size:12px;color:var(--text-secondary);">${new Date(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+        <td><span style="font-size:12px;font-weight:600;color:${sc};padding:3px 10px;border-radius:20px;">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span></td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.status !== 'processing' ? `<button class="upgrade-btn" style="background:#E6F1FB;color:#185FA5;" onclick="updatePayoutStatus('${r.id}','processing')">Processing</button>` : ''}
+          ${r.status !== 'paid'       ? `<button class="upgrade-btn" style="background:#E8F9F0;color:#219653;" onclick="updatePayoutStatus('${r.id}','paid')">Mark paid</button>` : ''}
+          ${r.status !== 'pending'    ? `<button class="upgrade-btn" style="background:#FAEEDA;color:#854F0B;" onclick="updatePayoutStatus('${r.id}','pending')">Revert</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
+}
+
+/* ── Customer payout history ── */
+function renderPayoutHistory() {
+  const el = document.getElementById('payout-history-list');
+  if (!el) return;
+  const mine = payoutRequests.filter(r => currentUser && r.email === currentUser.email).reverse();
+  if (mine.length === 0) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-wallet-off"></i><p>No cashout requests yet.</p></div>';
+    return;
+  }
+  const statusColors = { pending:'color:#854F0B;background:#FAEEDA', processing:'color:#185FA5;background:#E6F1FB', paid:'color:#219653;background:#E8F9F0' };
+  const methodLabel  = { bank:'Bank Transfer', easypaisa:'Easypaisa', jazzcash:'JazzCash' };
+  el.innerHTML = mine.map(r => `
+    <div class="history-item">
+      <div class="history-info">
+        <h4>${methodLabel[r.method] || r.method} — PKR ${Math.round(r.amount).toLocaleString()}</h4>
+        <p>${new Date(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</p>
+      </div>
+      <span style="font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;${statusColors[r.status] || ''}">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span>
+    </div>
+  `).join('');
+}
+
+renderSurveys('all');
+renderHome();
+
+const savedSession = localStorage.getItem('se_session');
+if (savedSession && users[savedSession]) {
+  loginSuccess(users[savedSession]);
+}
+</script>
+</body>
+</html>
