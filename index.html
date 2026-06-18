@@ -1012,8 +1012,22 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
 const ADMIN_PIN = '7933';
+
+firebase.initializeApp({
+  apiKey: "AIzaSyB2EWi-0BJ1knxibeWGb_QlpLC2TEW71mU",
+  authDomain: "surey-earn.firebaseapp.com",
+  projectId: "surey-earn",
+  storageBucket: "surey-earn.firebasestorage.app",
+  messagingSenderId: "146812008428",
+  appId: "1:146812008428:web:222d9500d392bf7579f2c9"
+});
+const db = firebase.firestore();
+const usersCol = db.collection('users');
+const payoutsCol = db.collection('payouts');
 
 const DAY_PACKAGES = {
   d10: {
@@ -1049,45 +1063,40 @@ function getUserPackage() {
   return pkg && plan ? { ...pkg, plan } : null;
 }
 
-function saveToStorage() {
-  localStorage.setItem('se_users', JSON.stringify(users));
-  if (currentUser) {
-    localStorage.setItem('se_session', currentUser.email);
-    localStorage.setItem('se_balance_' + currentUser.email, balance);
-    localStorage.setItem('se_total_' + currentUser.email, totalEarned);
-    localStorage.setItem('se_history_' + currentUser.email, JSON.stringify(completedSurveys));
-    const doneSurveys = surveys.filter(s => s.done).map(s => s.id);
-    localStorage.setItem('se_done_' + currentUser.email, JSON.stringify(doneSurveys));
-    if (currentUser.packageKey !== undefined) {
-      localStorage.setItem('se_pkg_' + currentUser.email, currentUser.packageKey || '');
-      localStorage.setItem('se_pkgidx_' + currentUser.email, currentUser.planIdx !== undefined ? currentUser.planIdx : '');
-    }
-    if (currentUser.packageActivatedDate) {
-      localStorage.setItem('se_pkg_date_' + currentUser.email, currentUser.packageActivatedDate);
-    }
-  }
+async function saveToStorage() {
+  if (!currentUser) return;
+  localStorage.setItem('se_session', currentUser.email);
+  const doneSurveys = surveys.filter(s => s.done).map(s => s.id);
+  const data = {
+    ...(users[currentUser.email] || {}),
+    first: currentUser.first, last: currentUser.last,
+    email: currentUser.email, password: currentUser.password,
+    phone: currentUser.phone || '', whatsapp: currentUser.whatsapp || '',
+    memWord: currentUser.memWord || '',
+    balance, totalEarned, completedSurveys, doneSurveys,
+    packageKey: currentUser.packageKey || null,
+    planIdx: currentUser.planIdx !== undefined ? currentUser.planIdx : null,
+    packageStartIdx: currentUser.packageStartIdx || 0,
+    packageActivatedDate: currentUser.packageActivatedDate || null,
+    streak: users[currentUser.email] ? (users[currentUser.email].streak || 0) : 0,
+    streakDate: users[currentUser.email] ? (users[currentUser.email].streakDate || null) : null,
+  };
+  users[currentUser.email] = data;
+  try { await usersCol.doc(currentUser.email).set(data); } catch(e) { console.error('Save error:', e); }
 }
 
 function loadUserData(email) {
-  balance = parseFloat(localStorage.getItem('se_balance_' + email) || '0');
-  totalEarned = parseFloat(localStorage.getItem('se_total_' + email) || '0');
-  completedSurveys = JSON.parse(localStorage.getItem('se_history_' + email) || '[]');
-  const doneSurveys = JSON.parse(localStorage.getItem('se_done_' + email) || '[]');
+  const u = users[email] || {};
+  balance = parseFloat(u.balance || 0);
+  totalEarned = parseFloat(u.totalEarned || 0);
+  completedSurveys = u.completedSurveys || [];
+  const doneSurveys = u.doneSurveys || [];
   surveys.forEach(s => s.done = doneSurveys.includes(s.id));
-  // Load package activation date into currentUser if available
-  const pkgDate = localStorage.getItem('se_pkg_date_' + email);
-  if (pkgDate && currentUser) currentUser.packageActivatedDate = pkgDate;
-  // Also load packageStartIdx if stored in users object
-  if (users[email] && users[email].packageActivatedDate && currentUser) {
-    currentUser.packageActivatedDate = users[email].packageActivatedDate;
-  }
-  if (users[email] && users[email].packageStartIdx !== undefined && currentUser) {
-    currentUser.packageStartIdx = users[email].packageStartIdx;
-  }
+  if (u.packageActivatedDate && currentUser) currentUser.packageActivatedDate = u.packageActivatedDate;
+  if (u.packageStartIdx !== undefined && currentUser) currentUser.packageStartIdx = u.packageStartIdx;
 }
 
-const storedUsers = localStorage.getItem('se_users');
-const users = storedUsers ? JSON.parse(storedUsers) : {};
+let users = {};
 let currentUser = null;
 let adminUnlocked = false;
 
@@ -1120,36 +1129,33 @@ function lockAdmin() {
   document.getElementById('admin-dashboard').style.display = 'none';
 }
 
-function upgradeUser(email, packageKey, planIdx) {
-  if (!users[email]) return;
+async function upgradeUser(email, packageKey, planIdx) {
+  if (!users[email]) {
+    try {
+      const snap = await usersCol.doc(email).get();
+      if (!snap.exists) { alert('User not found.'); return; }
+      users[email] = snap.data();
+    } catch(e) { alert('Error fetching user. Please try again.'); return; }
+  }
+  const prevHistory = users[email].completedSurveys || [];
   users[email].packageKey = packageKey;
   users[email].planIdx = parseInt(planIdx);
-
-  // Record how many surveys the user has done so far — new package quota starts from here
-  const prevHistory = JSON.parse(localStorage.getItem('se_history_' + email) || '[]');
   users[email].packageStartIdx = prevHistory.length;
-
-  // Set activation date so the package counts down from today
   users[email].packageActivatedDate = new Date().toISOString();
-
-  // Reset done-survey flags so surveys are available again on the new package
-  localStorage.setItem('se_done_' + email, JSON.stringify([]));
-  // Reset day streak for new package
-  localStorage.setItem('se_streak_' + email, '0');
-  localStorage.removeItem('se_streak_date_' + email);
-
-  localStorage.setItem('se_users', JSON.stringify(users));
-
+  users[email].doneSurveys = [];
+  users[email].streak = 0;
+  users[email].streakDate = null;
+  try {
+    await usersCol.doc(email).set(users[email]);
+  } catch(e) { alert('Error saving. Please try again.'); return; }
   if (currentUser && currentUser.email === email) {
     currentUser.packageKey = packageKey;
     currentUser.planIdx = parseInt(planIdx);
     currentUser.packageStartIdx = users[email].packageStartIdx;
     currentUser.packageActivatedDate = users[email].packageActivatedDate;
     surveys.forEach(s => s.done = false);
-    saveToStorage();
     renderSurveys(currentFilter || 'all');
   }
-
   renderAdminTable(document.querySelector('.admin-search') ? document.querySelector('.admin-search').value : '');
   filterPayouts('all');
   const pkg = DAY_PACKAGES[packageKey];
@@ -1157,9 +1163,18 @@ function upgradeUser(email, packageKey, planIdx) {
   alert('✓ ' + users[email].first + ' upgraded to ' + pkg.label + ' — ' + plan.name + '. Previous earnings & history preserved.');
 }
 
-function renderAdminTable(query) {
+async function renderAdminTable(query) {
+  const wrap = document.getElementById('admin-table-wrap');
+  wrap.innerHTML = '<div class="admin-empty"><i class="ti ti-loader"></i> Loading users...</div>';
+  try {
+    const snap = await usersCol.get();
+    snap.forEach(doc => { users[doc.id] = doc.data(); });
+  } catch(e) {
+    wrap.innerHTML = '<div class="admin-empty">Error loading users. Check connection.</div>';
+    return;
+  }
   const list = Object.values(users).filter(u =>
-    (u.first + ' ' + u.last + ' ' + u.email).toLowerCase().includes(query.toLowerCase())
+    (u.first + ' ' + u.last + ' ' + u.email).toLowerCase().includes((query||'').toLowerCase())
   );
   const today = new Date().toLocaleDateString();
   const allUsers = Object.values(users);
@@ -1245,14 +1260,15 @@ function renderAdminTable(query) {
   `;
 }
 
-function adminResetPassword(email) {
+async function adminResetPassword(email) {
   const newPass = prompt('Enter new password for ' + email + ':');
   if (!newPass) return;
   if (newPass.length < 8) { alert('Password must be at least 8 characters.'); return; }
-  if (!users[email]) { alert('User not found.'); return; }
-  users[email].password = newPass;
-  localStorage.setItem('se_users', JSON.stringify(users));
-  alert('Password reset successfully for ' + email);
+  try {
+    await usersCol.doc(email).update({ password: newPass });
+    if (users[email]) users[email].password = newPass;
+    alert('Password reset successfully for ' + email);
+  } catch(e) { alert('Error resetting password. Please try again.'); }
 }
 
 function openAdmin() {
@@ -1346,22 +1362,34 @@ function checkStrength(val) {
   lbl.style.color = score > 0 ? colors[score - 1] : 'var(--text-tertiary)';
 }
 
-function doLogin() {
+async function doLogin() {
   clearAuthMessages();
-  const email = document.getElementById('login-email').value.trim();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
   const pass = document.getElementById('login-password').value;
   if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
   if (!email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
-  const user = users[email.toLowerCase()];
-  if (!user || user.password !== pass) { showAuthError('Incorrect email or password. Please try again.'); return; }
-  loginSuccess(user);
+  const btn = document.querySelector('#login-form .btn-primary');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Signing in...'; }
+  try {
+    const snap = await usersCol.doc(email).get();
+    if (!snap.exists || snap.data().password !== pass) {
+      showAuthError('Incorrect email or password. Please try again.');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Sign in'; }
+      return;
+    }
+    users[email] = snap.data();
+    loginSuccess(snap.data());
+  } catch(e) {
+    showAuthError('Connection error. Please try again.');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Sign in'; }
+  }
 }
 
-function doSignup() {
+async function doSignup() {
   clearAuthMessages();
   const first     = document.getElementById('signup-first').value.trim();
   const last      = document.getElementById('signup-last').value.trim();
-  const email     = document.getElementById('signup-email').value.trim();
+  const email     = document.getElementById('signup-email').value.trim().toLowerCase();
   const pass      = document.getElementById('signup-password').value;
   const confirm   = document.getElementById('signup-confirm').value;
   const phone     = document.getElementById('signup-phone').value.trim();
@@ -1375,41 +1403,61 @@ function doSignup() {
   if (!whatsapp) { showAuthError('WhatsApp number is required.'); return; }
   if (!memWord) { showAuthError('Please enter a memorable word for password recovery.'); return; }
   if (!agreed) { showAuthError('Please agree to the Terms of Service to continue.'); return; }
-  if (users[email.toLowerCase()]) { showAuthError('An account with this email already exists.'); return; }
-  const user = { first, last, email: email.toLowerCase(), password: pass, phone, whatsapp, memWord, method: 'email', joinedDate: new Date().toLocaleDateString() };
-  users[email.toLowerCase()] = user;
-  localStorage.setItem('se_users', JSON.stringify(users));
-  loginSuccess(user);
+  const btn = document.querySelector('#signup-form .btn-primary');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Creating account...'; }
+  try {
+    const snap = await usersCol.doc(email).get();
+    if (snap.exists) {
+      showAuthError('An account with this email already exists.');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-user-plus"></i> Create account'; }
+      return;
+    }
+    const user = { first, last, email, password: pass, phone, whatsapp, memWord, method: 'email',
+      joinedDate: new Date().toLocaleDateString(), balance: 0, totalEarned: 0,
+      completedSurveys: [], doneSurveys: [], streak: 0, streakDate: null };
+    await usersCol.doc(email).set(user);
+    users[email] = user;
+    loginSuccess(user);
+  } catch(e) {
+    showAuthError('Connection error. Please try again.');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-user-plus"></i> Create account'; }
+  }
 }
 
 let forgotEmail = null;
-function doForgotVerify() {
+async function doForgotVerify() {
   clearAuthMessages();
   const email   = document.getElementById('forgot-email').value.trim().toLowerCase();
   const memWord = document.getElementById('forgot-memword').value.trim();
   if (!email || !email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
   if (!memWord) { showAuthError('Please enter your memorable word.'); return; }
-  const u = users[email];
-  if (!u || !u.memWord || u.memWord.toLowerCase() !== memWord.toLowerCase()) {
-    showAuthError('Email or memorable word is incorrect.');
-    return;
-  }
-  forgotEmail = email;
-  document.getElementById('forgot-step1').style.display = 'none';
-  document.getElementById('forgot-step2').style.display = 'block';
+  try {
+    const snap = await usersCol.doc(email).get();
+    if (!snap.exists) { showAuthError('Email or memorable word is incorrect.'); return; }
+    const u = snap.data();
+    if (!u.memWord || u.memWord.toLowerCase() !== memWord.toLowerCase()) {
+      showAuthError('Email or memorable word is incorrect.'); return;
+    }
+    users[email] = u;
+    forgotEmail = email;
+    document.getElementById('forgot-step1').style.display = 'none';
+    document.getElementById('forgot-step2').style.display = 'block';
+  } catch(e) { showAuthError('Connection error. Please try again.'); }
 }
-function doForgotReset() {
+async function doForgotReset() {
   clearAuthMessages();
-  const newPass  = document.getElementById('forgot-newpass').value;
-  const confirm  = document.getElementById('forgot-confirmpass').value;
+  const newPass = document.getElementById('forgot-newpass').value;
+  const confirm = document.getElementById('forgot-confirmpass').value;
   if (newPass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
   if (newPass !== confirm) { showAuthError('Passwords do not match.'); return; }
-  if (!forgotEmail || !users[forgotEmail]) { showAuthError('Session expired. Please start again.'); return; }
-  users[forgotEmail].password = newPass;
-  localStorage.setItem('se_users', JSON.stringify(users));
-  forgotEmail = null;
-  showAuthSuccess('Password reset successfully! You can now sign in.');
-  setTimeout(() => switchAuthTab('login'), 1500);
+  if (!forgotEmail) { showAuthError('Session expired. Please start again.'); return; }
+  try {
+    await usersCol.doc(forgotEmail).update({ password: newPass });
+    if (users[forgotEmail]) users[forgotEmail].password = newPass;
+    forgotEmail = null;
+    showAuthSuccess('Password reset successfully! You can now sign in.');
+    setTimeout(() => switchAuthTab('login'), 1500);
+  } catch(e) { showAuthError('Connection error. Please try again.'); }
 }
 function doForgot() { doForgotVerify(); }
 
@@ -1420,7 +1468,7 @@ function doGoogleAuth() {
 function updateNavAvatar() {
   if (!currentUser) return;
   const el = document.getElementById('nav-avatar');
-  const pic = localStorage.getItem('se_avatar_' + currentUser.email);
+  const pic = (users[currentUser.email] && users[currentUser.email].avatar) || localStorage.getItem('se_avatar_' + currentUser.email);
   if (pic) {
     el.innerHTML = `<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
   } else {
@@ -1428,8 +1476,13 @@ function updateNavAvatar() {
   }
 }
 
-function loginSuccess(user) {
+async function loginSuccess(user) {
   currentUser = user;
+  // Load user's payout history from Firestore
+  try {
+    const snap = await payoutsCol.where('email', '==', user.email).get();
+    payoutRequests = snap.docs.map(d => d.data());
+  } catch(e) { payoutRequests = []; }
   loadUserData(user.email);
   document.getElementById('nav-guest').style.display = 'none';
   document.getElementById('nav-user').style.display = 'flex';
@@ -1443,6 +1496,7 @@ function loginSuccess(user) {
 function logout() {
   localStorage.removeItem('se_session');
   currentUser = null;
+  payoutRequests = [];
   balance = 0; totalEarned = 0; completedSurveys = [];
   surveys.forEach(s => s.done = false);
   document.getElementById('nav-guest').style.display = 'block';
@@ -1544,23 +1598,23 @@ function getLimitReason() {
 
 function getDayStreak() {
   if (!currentUser) return 0;
-  const streak = parseInt(localStorage.getItem('se_streak_' + currentUser.email) || '0');
-  return streak;
+  return parseInt((users[currentUser.email] && users[currentUser.email].streak) || 0);
 }
 
 function updateDayStreak() {
   if (!currentUser) return;
-  const key = 'se_streak_' + currentUser.email;
-  const dateKey = 'se_streak_date_' + currentUser.email;
-  const lastDate = localStorage.getItem(dateKey);
+  const u = users[currentUser.email] || {};
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
-  let streak = parseInt(localStorage.getItem(key) || '0');
-  if (lastDate === today) return; // already counted today
-  if (lastDate === yesterday) { streak += 1; } // consecutive day
-  else { streak = 1; } // missed a day or first time
-  localStorage.setItem(key, streak);
-  localStorage.setItem(dateKey, today);
+  const lastDate = u.streakDate || null;
+  let streak = parseInt(u.streak || 0);
+  if (lastDate === today) return;
+  if (lastDate === yesterday) { streak += 1; }
+  else { streak = 1; }
+  if (!users[currentUser.email]) users[currentUser.email] = {};
+  users[currentUser.email].streak = streak;
+  users[currentUser.email].streakDate = today;
+  saveToStorage();
 }
 
 function showUpgradeWall() {
@@ -2019,11 +2073,7 @@ function renderDashboard() {
 }
 
 /* ── Payout requests ── */
-let payoutRequests = JSON.parse(localStorage.getItem('se_payouts') || '[]');
-
-function savePayouts() {
-  localStorage.setItem('se_payouts', JSON.stringify(payoutRequests));
-}
+let payoutRequests = [];
 
 function openContact() {
   document.getElementById('contact-modal').classList.add('show');
@@ -2096,7 +2146,7 @@ function submitWithdraw() {
     date: new Date().toISOString()
   };
   payoutRequests.push(req);
-  savePayouts();
+  payoutsCol.doc(req.id).set(req).catch(e => console.error('Payout save error:', e));
 
   document.getElementById('withdraw-form').style.display = 'none';
   document.getElementById('withdraw-success').style.display = 'block';
@@ -2145,8 +2195,9 @@ function handleAvatarUpload(input) {
       ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
       const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
       localStorage.setItem('se_avatar_' + currentUser.email, dataUrl);
+      if (!users[currentUser.email]) users[currentUser.email] = {};
       users[currentUser.email].avatar = dataUrl;
-      localStorage.setItem('se_users', JSON.stringify(users));
+      usersCol.doc(currentUser.email).update({ avatar: dataUrl }).catch(e => console.error(e));
       updateNavAvatar();
       renderProfile();
     };
@@ -2175,9 +2226,13 @@ function saveProfile() {
   currentUser.whatsapp = whatsapp;
   if (newpass) currentUser.password = newpass;
 
+  if (!users[currentUser.email]) users[currentUser.email] = {};
   users[currentUser.email] = { ...users[currentUser.email], first, last, phone, whatsapp };
   if (newpass) users[currentUser.email].password = newpass;
-  localStorage.setItem('se_users', JSON.stringify(users));
+
+  const update = { first, last, phone, whatsapp };
+  if (newpass) update.password = newpass;
+  usersCol.doc(currentUser.email).update(update).catch(e => console.error(e));
   saveToStorage();
   updateNavAvatar();
   document.getElementById('profile-name-display').textContent = first + ' ' + last;
@@ -2196,20 +2251,24 @@ function showProfileMsg(text, type) {
 /* ── Admin payout requests ── */
 let payoutFilter = 'all';
 
-function filterPayouts(f) {
+async function filterPayouts(f) {
   payoutFilter = f;
   ['all','pending','processing','paid'].forEach(s => {
     const el = document.getElementById('pf-' + s);
     if (el) el.style.fontWeight = s === f ? '700' : '400';
   });
+  try {
+    const snap = await payoutsCol.get();
+    payoutRequests = snap.docs.map(d => d.data());
+  } catch(e) { console.error('Error loading payouts:', e); }
   renderAdminPayouts();
 }
 
-function updatePayoutStatus(id, status) {
+async function updatePayoutStatus(id, status) {
   const req = payoutRequests.find(r => r.id === id);
   if (!req) return;
   req.status = status;
-  savePayouts();
+  try { await payoutsCol.doc(id).update({ status }); } catch(e) { console.error(e); }
   renderAdminPayouts();
 }
 
@@ -2279,8 +2338,13 @@ renderSurveys('all');
 renderHome();
 
 const savedSession = localStorage.getItem('se_session');
-if (savedSession && users[savedSession]) {
-  loginSuccess(users[savedSession]);
+if (savedSession) {
+  usersCol.doc(savedSession).get().then(snap => {
+    if (snap.exists) {
+      users[savedSession] = snap.data();
+      loginSuccess(snap.data());
+    }
+  }).catch(e => console.error('Session restore error:', e));
 }
 </script>
 </body>
