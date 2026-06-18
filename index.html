@@ -1188,10 +1188,9 @@ async function renderAdminTable(query) {
   document.getElementById('adm-count-d30').textContent = allUsers.filter(u => u.packageKey === 'd30').length;
 
   if (list.length === 0) {
-    document.getElementById('admin-table-wrap').innerHTML = '<div class="admin-empty"><i class="ti ti-users"></i>No users found.</div>';
+    wrap.innerHTML = '<div class="admin-empty"><i class="ti ti-users"></i>No users found.</div>';
     return;
   }
-  const wrap = document.getElementById('admin-table-wrap');
   wrap.innerHTML = `
     <table class="admin-table">
       <thead>
