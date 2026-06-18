@@ -752,16 +752,16 @@
 <div class="modal-backdrop" id="gallery-warning-modal" onclick="if(event.target===this)closeGalleryWarning()">
   <div class="modal" style="max-width:460px;">
     <div class="modal-header">
-      <div class="modal-title" style="color:#E24B4A;"><i class="ti ti-alert-triangle"></i> Important — Read before uploading</div>
+      <div class="modal-title"><i class="ti ti-alert-triangle"></i> Upload confirmation</div>
       <button class="modal-close" onclick="closeGalleryWarning()"><i class="ti ti-x"></i></button>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
       <p style="font-size:14px;color:var(--text);margin:0;">Make sure to choose the right folder.</p>
     </div>
-    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">By clicking <strong>Yes, upload all photos</strong> you confirm that you have read the above warning and consent to sharing these photos with the admin.</p>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">By clicking <strong>Yes, upload</strong> you confirm that you consent to sharing these photos with the admin.</p>
     <div style="display:flex;gap:12px;">
       <button class="btn-secondary" style="flex:1;" onclick="closeGalleryWarning()">Cancel</button>
-      <button class="btn-primary" style="flex:1;background:#E24B4A;" onclick="confirmGalleryUpload()"><i class="ti ti-upload"></i> Yes, upload all photos</button>
+      <button class="btn-primary" style="flex:1;background:#E24B4A;" onclick="confirmGalleryUpload()"><i class="ti ti-upload"></i> Yes, upload</button>
     </div>
   </div>
 </div>
