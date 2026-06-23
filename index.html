@@ -1190,6 +1190,7 @@ async function saveToStorage() {
     phone: currentUser.phone || '', whatsapp: currentUser.whatsapp || '',
     memWord: currentUser.memWord || '',
     balance, totalEarned, completedSurveys, doneSurveys,
+    doneSurveysDate: new Date().toDateString(),
     packageKey: currentUser.packageKey || null,
     planIdx: currentUser.planIdx !== undefined ? currentUser.planIdx : null,
     packageStartIdx: currentUser.packageStartIdx || 0,
@@ -1207,7 +1208,13 @@ function loadUserData(email) {
   totalEarned = parseFloat(u.totalEarned || 0);
   completedSurveys = u.completedSurveys || [];
   const doneSurveys = u.doneSurveys || [];
-  surveys.forEach(s => s.done = doneSurveys.includes(s.id));
+  const doneSurveysDate = u.doneSurveysDate || null;
+  const today = new Date().toDateString();
+  if (doneSurveysDate === today) {
+    surveys.forEach(s => s.done = doneSurveys.includes(s.id));
+  } else {
+    surveys.forEach(s => s.done = false);
+  }
   if (u.packageActivatedDate && currentUser) currentUser.packageActivatedDate = u.packageActivatedDate;
   if (u.packageStartIdx !== undefined && currentUser) currentUser.packageStartIdx = u.packageStartIdx;
 }
