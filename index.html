@@ -660,6 +660,28 @@
     </div>
     <div id="dashboard-plan-info" style="margin-bottom:20px;"></div>
 
+    <!-- Lucky Spin Wheel Section -->
+    <div id="spin-wheel-section" style="margin-bottom:24px;">
+      <div class="history-title"><i class="ti ti-rotate-clockwise" style="margin-right:6px;color:#F59E0B;"></i>Lucky Spin Wheel</div>
+      <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(245,158,11,0.15),transparent 60%);pointer-events:none;"></div>
+        <div id="spin-used-msg" style="display:none;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-md);padding:10px 16px;color:#FDE68A;font-size:13px;font-weight:600;margin-bottom:16px;">
+          <i class="ti ti-clock"></i> You've used your spin for today. Come back tomorrow!
+        </div>
+        <!-- Wheel container -->
+        <div style="position:relative;display:inline-block;margin-bottom:20px;">
+          <!-- Pointer -->
+          <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:22px solid #F59E0B;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></div>
+          <canvas id="spin-canvas" width="280" height="280" style="border-radius:50%;box-shadow:0 0 0 6px #F59E0B,0 0 0 10px rgba(245,158,11,0.3),0 8px 32px rgba(0,0,0,0.5);cursor:pointer;" onclick="spinWheel()"></canvas>
+        </div>
+        <div id="spin-result" style="min-height:40px;margin-bottom:16px;font-size:15px;font-weight:700;color:#fff;"></div>
+        <button id="spin-btn" class="btn-primary" style="background:linear-gradient(135deg,#F59E0B,#D97706);border:none;font-size:15px;padding:12px 32px;border-radius:50px;font-weight:700;letter-spacing:0.03em;box-shadow:0 4px 16px rgba(245,158,11,0.4);" onclick="spinWheel()">
+          <i class="ti ti-rotate-clockwise"></i> Spin Now
+        </button>
+        <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.45);">1 free spin per day</div>
+      </div>
+    </div>
+
     <!-- Submit Payment Proof Section (paid only) -->
     <div id="submit-work-section" style="display:none;margin-bottom:24px;">
       <div class="history-title">Submit payment proof</div>
@@ -2241,6 +2263,149 @@ function completeSurvey() {
   `;
 }
 
+// ── SPIN WHEEL ────────────────────────────────────────────────────────────────
+const SPIN_SEGMENTS = [
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'PKR 5',     color: '#7C3AED', text: '#fff',    prize: 5 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'PKR 10',    color: '#0369A1', text: '#fff',    prize: 10 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'PKR 20',    color: '#065F46', text: '#fff',    prize: 20 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'PKR 50',    color: '#92400E', text: '#fff',    prize: 50 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'PKR 70',    color: '#B91C1C', text: '#fff',    prize: 70 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'PKR 100',   color: '#D97706', text: '#fff',    prize: 100 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
+];
+// 14 Try Again (70%) + 6 prizes (30%) = 20 segments
+
+let spinAngle = 0;
+let spinIsRunning = false;
+
+function drawWheel(angle) {
+  const canvas = document.getElementById('spin-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 4;
+  const arc = (2 * Math.PI) / SPIN_SEGMENTS.length;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  SPIN_SEGMENTS.forEach((seg, i) => {
+    const start = angle + i * arc;
+    const end = start + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // label
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = seg.text;
+    ctx.font = seg.prize > 0 ? 'bold 11px sans-serif' : '10px sans-serif';
+    ctx.fillText(seg.label, r - 8, 4);
+    ctx.restore();
+  });
+  // centre hub
+  ctx.beginPath();
+  ctx.arc(cx, cy, 20, 0, 2 * Math.PI);
+  ctx.fillStyle = '#F59E0B';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function pickWeightedSegment() {
+  const prizes = SPIN_SEGMENTS.map((s, i) => ({ i, prize: s.prize })).filter(s => s.prize > 0);
+  const rand = Math.random();
+  if (rand < 0.70) {
+    const tryAgains = SPIN_SEGMENTS.map((s, i) => ({ i, prize: s.prize })).filter(s => s.prize === 0);
+    return tryAgains[Math.floor(Math.random() * tryAgains.length)].i;
+  } else {
+    return prizes[Math.floor(Math.random() * prizes.length)].i;
+  }
+}
+
+function spinWheel() {
+  if (spinIsRunning) return;
+  const u = users[currentUser && currentUser.email] || {};
+  if (u.lastSpinDate === new Date().toDateString()) {
+    document.getElementById('spin-used-msg').style.display = 'block';
+    return;
+  }
+  spinIsRunning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('spin-result').textContent = '';
+
+  const targetIdx = pickWeightedSegment();
+  const arc = (2 * Math.PI) / SPIN_SEGMENTS.length;
+  // Angle so that targetIdx segment lands under the top pointer
+  const targetAngle = -targetIdx * arc - arc / 2 + (Math.PI * 3 / 2); // pointer at top = -π/2
+  const spins = 5 + Math.random() * 3; // 5-8 full rotations
+  const finalAngle = targetAngle - spins * 2 * Math.PI;
+
+  const duration = 4000;
+  const startAngle = spinAngle;
+  const startTime = performance.now();
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function animate(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    spinAngle = startAngle + (finalAngle - startAngle) * easeOut(t);
+    drawWheel(spinAngle);
+    if (t < 1) { requestAnimationFrame(animate); return; }
+    spinAngle = finalAngle;
+    spinIsRunning = false;
+    const seg = SPIN_SEGMENTS[targetIdx];
+    if (seg.prize > 0) {
+      balance += seg.prize;
+      totalEarned += seg.prize;
+      if (!users[currentUser.email]) users[currentUser.email] = {};
+      users[currentUser.email].lastSpinDate = new Date().toDateString();
+      saveToStorage();
+      renderDashboard();
+      document.getElementById('spin-result').innerHTML =
+        `<span style="color:#F59E0B;font-size:22px;">🎉</span> <span style="color:#34D399;">You won <strong>PKR ${seg.prize}</strong>! Added to your balance.</span>`;
+    } else {
+      if (!users[currentUser.email]) users[currentUser.email] = {};
+      users[currentUser.email].lastSpinDate = new Date().toDateString();
+      saveToStorage();
+      document.getElementById('spin-result').innerHTML =
+        `<span style="color:#9CA3AF;">Better luck tomorrow! Try again tomorrow.</span>`;
+    }
+    document.getElementById('spin-btn').disabled = false;
+    document.getElementById('spin-used-msg').style.display = 'block';
+    document.getElementById('spin-btn').style.display = 'none';
+  }
+  requestAnimationFrame(animate);
+}
+
+function initSpinWheel() {
+  drawWheel(spinAngle);
+  const u = users[currentUser && currentUser.email] || {};
+  const usedToday = u.lastSpinDate === new Date().toDateString();
+  document.getElementById('spin-used-msg').style.display = usedToday ? 'block' : 'none';
+  document.getElementById('spin-btn').style.display = usedToday ? 'none' : 'inline-flex';
+  document.getElementById('spin-result').textContent = '';
+}
+// ── END SPIN WHEEL ─────────────────────────────────────────────────────────────
+
 function closeQuiz() {
   document.getElementById('quiz-modal').classList.remove('show');
   renderSurveys(currentFilter);
@@ -2346,6 +2511,7 @@ function renderDashboard() {
     updateReferralLink();
     loadMyGallery();
   }
+  setTimeout(initSpinWheel, 0);
 }
 
 /* ── Payout requests ── */
