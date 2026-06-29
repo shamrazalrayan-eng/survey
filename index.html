@@ -2298,6 +2298,8 @@ function drawWheel(angle) {
   const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 4;
   const arc = (2 * Math.PI) / SPIN_SEGMENTS.length;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   SPIN_SEGMENTS.forEach((seg, i) => {
     const start = angle + i * arc;
     const end = start + arc;
