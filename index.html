@@ -2265,28 +2265,15 @@ function completeSurvey() {
 
 // ── SPIN WHEEL ────────────────────────────────────────────────────────────────
 const SPIN_SEGMENTS = [
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
+  { label: 'Try Again', color: '#374151', text: '#E5E7EB', prize: 0 },
   { label: 'PKR 5',     color: '#7C3AED', text: '#fff',    prize: 5 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
   { label: 'PKR 10',    color: '#0369A1', text: '#fff',    prize: 10 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
   { label: 'PKR 20',    color: '#065F46', text: '#fff',    prize: 20 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
   { label: 'PKR 50',    color: '#92400E', text: '#fff',    prize: 50 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
   { label: 'PKR 70',    color: '#B91C1C', text: '#fff',    prize: 70 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
   { label: 'PKR 100',   color: '#D97706', text: '#fff',    prize: 100 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
-  { label: 'Try Again', color: '#374151', text: '#9CA3AF', prize: 0 },
-  { label: 'Try Again', color: '#1F2937', text: '#6B7280', prize: 0 },
 ];
-// 14 Try Again (70%) + 6 prizes (30%) = 20 segments
+// 7 visual segments; outcome weighted 70% Try Again via pickWeightedSegment()
 
 let spinAngle = 0;
 let spinIsRunning = false;
